@@ -1,0 +1,36 @@
+<resources>
+    <string name="app_name">共有IT記事</string>
+    <!-- リスト画面用 -->
+    <string name="tv_title_list">IH-13A-115 共有記事リスト</string>
+    <!--    <string name="btn_new">新規</string>-->
+    <!-- 編集画面用 -->
+    <string name="tv_title_edit">記事詳細画面</string>
+<!--    <string name="tv_title_insert">店内容登録</string>-->
+    <string name="tv_title">記事タイトル:</string>
+    <string name="tv_add_title">記事の追加</string>
+    <string name="tv_input_tel">記事のURL:</string>
+    <string name="tv_input_url">記事に対するコメント:</string>
+    <string name="tv_article_title">記事のタイトル:</string>
+    <string name="tv_URLArticle">記事のURL:</string>
+    <string name="tvCommentOnArticle">記事のコメント:</string>
+    <!--    <string name="btn_save">更新</string>-->
+    <!--    <string name="btn_insert">保存</string>-->
+    <string name="acb_save">更新</string>
+    <string name="acb_sync">保存</string>
+    <string name="btn_back">戻る</string>
+    <string name="acb_delete">削除</string>
+    <string name="menu_add">要素の追加</string>
+    <string name="msg_input_title">店名を入力してください。</string>
+    <string name="msg_hoge">hogehoge</string>
+    <!-- ダイアログ -->
+    <string name="dlg_btn_ok">はい</string>
+    <string name="dlg_btn_ng">いいえ</string>
+    <string name="dlg_full_title">通常ダイアログ</string>
+    <string name="dlg_full_msg">削除してもよろしいですか?</string>
+    <string name="dlg_full_toast_ok">選択された要素が削除されました。</string>
+    <string name="dlg_full_toast_ng">いいえが押下されました。</string>
+    <!--    エラー-->
+    <string name="msg_err_send">サーバ通信に失敗しました。もう一度送信をお願いします。</string>
+    <string name="msg_err_timeout">サーバ通信がタイムアウトしました。もう一度送信をお願いします。</string>
+    <string name="msg_err_parse">サーバからの返信内容の解析に失敗しました。もう一度送信をお願いします。</string>
+</resources>

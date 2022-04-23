@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">三十三所巡礼管理</string>
+    <string name="temple_name">本尊</string>
+    <string name="sect">宗旨</string>
+    <string name="address">所在地</string>
+    <string name="URL">URL</string>
+    <string name="impressions">感想</string>
+    <string name="btn_save">保存</string>
+</resources>

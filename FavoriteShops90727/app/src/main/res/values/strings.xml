@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">お気に入り店</string>
+    <!-- リスト画面用 -->
+    <string name="tv_title_list">お気に入り店リスト</string>
+<!--    <string name="btn_new">新規</string>-->
+    <!-- 編集画面用 -->
+    <string name="tv_title_edit">店内容編集</string>
+    <string name="tv_title_insert">店内容登録</string>
+    <string name="tv_input_name">店名:</string>
+    <string name="tv_input_tel">Tel:</string>
+    <string name="tv_input_url">URL:</string>
+    <string name="tv_input_note">メモ:</string>
+<!--    <string name="btn_save">更新</string>-->
+<!--    <string name="btn_insert">保存</string>-->
+    <string name="acb_save">更新</string>
+    <string name="acb_sync">保存</string>
+    <string name="btn_back">戻る</string>
+    <string name="acb_delete">削除</string>
+    <string name="menu_add">要素の追加</string>
+    <string name="msg_input_title">店名を入力してください。</string>
+    <string name="msg_hoge">hogehoge</string>
+    <!-- ダイアログ -->
+    <string name="dlg_btn_ok">はい</string>
+    <string name="dlg_btn_ng">いいえ</string>
+    <string name="dlg_full_title">通常ダイアログ</string>
+    <string name="dlg_full_msg">削除してもよろしいですか?</string>
+    <string name="dlg_full_toast_ok">選択された要素が削除されました。</string>
+    <string name="dlg_full_toast_ng">いいえが押下されました。</string>
+</resources>

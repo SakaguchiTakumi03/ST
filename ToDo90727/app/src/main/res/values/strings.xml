@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">ToDo</string>
+    <string name="menu_add">要素の追加</string>
+    <string name="tv_title_list">タスクリスト</string>
+</resources>

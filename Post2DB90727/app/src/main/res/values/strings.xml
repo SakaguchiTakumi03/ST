@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Post2DB実験</string>
+    <string name="tv_LastName">姓【lastname】</string>
+    <string name="tv_FirstName">名【firstname】</string>
+    <string name="student_id">学籍番号【studentid】</string>
+    <string name="seat_no">出席番号【seatno】</string>
+    <string name="teacher_message">新三へのメッセージ【message】</string>
+    <string name="bt_send">送信</string>
+    <string name="msg_err_send">サーバ通信に失敗しました。もう一度送信をお願いします。</string>
+    <string name="msg_err_timeout">サーバ通信がタイムアウトしました。もう一度送信をお願いします。</string>
+    <string name="msg_err_parse">サーバからの返信内容の解析に失敗しました。もう一度送信をお願いします。</string>
+    <string name="btn_dialog_positive">確認</string>
+</resources>

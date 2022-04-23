@@ -1,0 +1,8 @@
+<!--
+ST31 Androidサンプル15 Webアクセス
+res/values/string.xmlファイル
+-->
+<resources>
+    <string name="app_name">Oh!天気</string>
+    <string name="btn_dialog_positive">確認</string>
+</resources>

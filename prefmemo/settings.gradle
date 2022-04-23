@@ -1,0 +1,2 @@
+rootProject.name = "prefmemo"
+include ':app'
