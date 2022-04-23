@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:onClick="tvDateClick">
     <!--    tools:context=".MemoEditActivity">-->
 
     <TextView
@@ -24,12 +25,12 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:text="@string/tv_input_title"
-        app:layout_constraintBottom_toBottomOf="@+id/etInputTitle"
+        app:layout_constraintBottom_toBottomOf="@+id/etInputTask"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvTitleEdit" />
 
     <EditText
-        android:id="@+id/etInputTitle"
+        android:id="@+id/etInputTask"
         android:layout_width="317dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -53,7 +54,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
     <EditText
-        android:id="@+id/etInputContent"
+        android:id="@+id/etInputNote"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="8dp"
@@ -68,7 +69,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tvInputContent" />
 
     <Switch
-        android:id="@+id/switch1"
+        android:id="@+id/switch_button"
         android:layout_width="137dp"
         android:layout_height="23dp"
         android:layout_marginTop="8dp"
@@ -76,7 +77,7 @@
         android:text="@string/switch_button_text"
         app:layout_constraintBottom_toBottomOf="@+id/textView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etInputTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/etInputTask" />
 
     <TextView
         android:id="@+id/textView"
@@ -86,15 +87,15 @@
         android:layout_marginTop="8dp"
         android:text="@string/tv_calender_info"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etInputTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/etInputTask" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/tvDate"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="@string/tv_to_do_date"
         app:layout_constraintStart_toEndOf="@+id/textView"
-        app:layout_constraintTop_toBottomOf="@+id/etInputTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/etInputTask" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

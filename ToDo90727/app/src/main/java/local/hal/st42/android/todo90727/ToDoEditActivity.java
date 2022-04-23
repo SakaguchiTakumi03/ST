@@ -1,5 +1,6 @@
 package local.hal.st42.android.todo90727;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -7,7 +8,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.webkit.ConsoleMessage;
+import android.view.View;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -15,12 +17,18 @@ import android.widget.Toast;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
-import org.w3c.dom.Text;
+import java.time.LocalDateTime;
+import java.time.Year;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 
 public class ToDoEditActivity extends AppCompatActivity {
     private int _mode = MainActivity.MODE_INSERT;
     private long _idNo = 0;
     private DatabaseHelper _helper;
+
+    private String strNowDate;
+//    private TextView tvDate = findViewById(R.id.tvDate);
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -38,26 +46,37 @@ public class ToDoEditActivity extends AppCompatActivity {
         TextView tvTitleEdit = findViewById(R.id.tvTitleEdit);
         tvTitleEdit.setText(R.string.tv_title_edit);
 
-        if(_mode == MainActivity.MODE_INSERT){
-            TextView tvTitleEdit = findViewById(R.id.tvTitleList);
-            tvTitleEdit.setText(R.string.tv_title_edit);
-        }else{
-            _idNo = intent.getLongExtra("idNo",0);
-            SQLiteDatabase db = _helper.getWritableDatabase();
-            ToDo shopsData = DataAccess.findByPK(db,_idNo);
+        TextView tvDate = findViewById(R.id.tvDate);
 
-            EditText etInputName = findViewById(R.id.etInputName);
-            etInputName.setText(shopsData.getName());
+        //現在日時取得
+        LocalDateTime nowDate = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日");
+        strNowDate = nowDate.format(formatter);
 
-            EditText etInputTell = findViewById(R.id.etInputTel);
-            etInputTell.setText(shopsData.getTel());
+        //表示
+        tvDate.setText(strNowDate);
 
-            EditText etInputUrl = findViewById(R.id.etInputUrl);
-            etInputUrl.setText(shopsData.getUrl());
-
-            EditText etInputNote = findViewById(R.id.etInputNote);
-            etInputNote.setText(shopsData.getNote());
-        }
+//        if(_mode == MainActivity.MODE_INSERT){
+//            TextView tvTitleEdit = findViewById(R.id.tvTitleList);
+//            tvTitleEdit.setText(R.string.tv_title_edit);
+//        }
+//        else{
+//            _idNo = intent.getLongExtra("idNo",0);
+//            SQLiteDatabase db = _helper.getWritableDatabase();
+//            ToDo shopsData = DataAccess.findByPK(db,_idNo);
+//
+//            EditText etInputName = findViewById(R.id.etInputName);
+//            etInputName.setText(shopsData.getName());
+//
+//            EditText etInputTell = findViewById(R.id.etInputTel);
+//            etInputTell.setText(shopsData.getTel());
+//
+//            EditText etInputUrl = findViewById(R.id.etInputUrl);
+//            etInputUrl.setText(shopsData.getUrl());
+//
+//            EditText etInputNote = findViewById(R.id.etInputNote);
+//            etInputNote.setText(shopsData.getNote());
+//        }
 
     }
 
@@ -85,7 +104,7 @@ public class ToDoEditActivity extends AppCompatActivity {
                 finish();
                 return true;
             case R.id.menuSave:
-                EditText etInputTitle = findViewById(R.id.etInputTitle);
+                EditText etInputTitle = findViewById(R.id.etInputTask);
                 String inputTitle = etInputTitle.getText().toString();
 //                String inputTitle = findViewById(R.id.etInputTitle).toString();//候補
                 if(inputTitle.equals("")){
@@ -93,9 +112,27 @@ public class ToDoEditActivity extends AppCompatActivity {
                 }
                 return true;
         }
-
-
         return true;
     }
+
+    //tvDateのonClickメソッド
+    public void tvDateClick(View view){
+        Calendar cal = Calendar.getInstance();
+        int nowYear = cal.get(Calendar.YEAR);
+        int nowMonth = cal.get(Calendar.MONTH);
+        int nowDayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
+        DatePickerDialog dateDialog = new DatePickerDialog(ToDoEditActivity.this, new DatePickerDialogDateSetListener(), nowYear, nowMonth, nowDayOfMonth);
+        dateDialog.show();
+    }
+
+    private class DatePickerDialogDateSetListener implements DatePickerDialog.OnDateSetListener{
+        @Override
+        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+            String msg = year+"年"+(month + 1)+"月"+dayOfMonth+"日";
+            TextView tvDate = findViewById(R.id.tvDate);
+            tvDate.setText(msg);
+        }
+    }
+
 
 }
