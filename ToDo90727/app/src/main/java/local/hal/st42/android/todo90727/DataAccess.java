@@ -3,9 +3,11 @@ package local.hal.st42.android.todo90727;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
+import android.util.Log;
 
 public class DataAccess {
     public static Cursor findAll(SQLiteDatabase db){
+        Log.d("DataAccess","findAll");
         String sql = "SELECT * FROM tasks";
         Cursor cursor = db.rawQuery(sql,null);
         return cursor;
@@ -13,7 +15,8 @@ public class DataAccess {
 
     //ぷらいまりーきー取得
     public static ToDo findByPK(SQLiteDatabase db,long id){
-        String sql = "SELECT * FROM tasks WHERE _id " + id;
+        Log.d("DataAccess","findByPK");
+        String sql = "SELECT * FROM tasks WHERE _id = " + id;
         Cursor cursor = db.rawQuery(sql,null);
         ToDo result = null;
         if(cursor.moveToFirst()){
@@ -34,6 +37,7 @@ public class DataAccess {
 
     //いんさーと
     public static long insert(SQLiteDatabase db, String name, long deadline, long done, String note){
+        Log.d("DataAccess","insert");
         String sql = "INSERT INTO tasks ( name, deadline, done, note) VALUES (?,?,?,?)";
         SQLiteStatement SQLstmt = db.compileStatement(sql);
         SQLstmt.bindString(1,name);
@@ -46,6 +50,7 @@ public class DataAccess {
 
     //あっぷでーと
     public static int update(SQLiteDatabase db, long id, String name, long deadline, long done, String note){
+        Log.d("DataAccess","update");
         String sql = "UPDATE tasks SET name = ?, deadline = ?, done = ?, note = ? WHERE _id = " + id;
         SQLiteStatement SQLstmt = db.compileStatement(sql);
         SQLstmt.bindString(1,name);
@@ -58,6 +63,7 @@ public class DataAccess {
 
     //さくじょ
     public static int delete(SQLiteDatabase db, long id){
+        Log.d("DataAccess","delete");
         String sql = "DELETE FROM tasks WHERE _id = " + id;
         SQLiteStatement SQLstmt = db.compileStatement(sql);
         SQLstmt.bindLong(1,id);

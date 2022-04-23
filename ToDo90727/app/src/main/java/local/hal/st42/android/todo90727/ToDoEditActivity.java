@@ -5,11 +5,13 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Switch;
@@ -62,27 +64,33 @@ public class ToDoEditActivity extends AppCompatActivity {
         //表示
         tvDate.setText(strNowDate);
 
-//        if(_mode == MainActivity.MODE_INSERT){
-//            TextView tvTitleEdit = findViewById(R.id.tvTitleList);
-//            tvTitleEdit.setText(R.string.tv_title_edit);
-//        }
-//        else{
-//            _idNo = intent.getLongExtra("idNo",0);
-//            SQLiteDatabase db = _helper.getWritableDatabase();
-//            ToDo shopsData = DataAccess.findByPK(db,_idNo);
-//
-//            EditText etInputName = findViewById(R.id.etInputName);
-//            etInputName.setText(shopsData.getName());
-//
-//            EditText etInputTell = findViewById(R.id.etInputTel);
-//            etInputTell.setText(shopsData.getTel());
-//
-//            EditText etInputUrl = findViewById(R.id.etInputUrl);
-//            etInputUrl.setText(shopsData.getUrl());
-//
-//            EditText etInputNote = findViewById(R.id.etInputNote);
-//            etInputNote.setText(shopsData.getNote());
-//        }
+        Button button = (Button) findViewById(R.id.switch_button);
+
+        if(_mode == MainActivity.MODE_INSERT){
+            //insert時の処理
+            button.setEnabled(false);
+        }
+        else{
+            //edit時の処理
+            Log.d("MODE_EDIT","入ったよ");
+            _idNo = intent.getLongExtra("idNo",0);
+
+            Log.d("selectId",""+String.valueOf(_idNo));
+            SQLiteDatabase db = _helper.getWritableDatabase();
+
+            Log.d("MODE_EDIT","db");
+
+            ToDo todo = DataAccess.findByPK(db,_idNo);
+
+            Log.d("MODE_EDIT","PK");
+
+            EditText etInputTask = findViewById(R.id.etInputTask);
+            etInputTask.setText(todo.getName());
+
+            EditText etInputNote = findViewById(R.id.etInputNote);
+            etInputNote.setText(todo.getNote());
+
+        }
 
     }
 
@@ -103,53 +111,48 @@ public class ToDoEditActivity extends AppCompatActivity {
         return true;
     }
 
-    public long getTimeInMillis(){
-        long millis = cal.getTimeInMillis();
-        return millis;
-    }
-
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item){
-//        switch (item.getItemId()){
-//            case android.R.id.home:
-//                finish();
-//                return true;
-//            default:
-//                Uri uri = Uri.parse(_articleURL);
-//                Intent intent = new Intent(Intent.ACTION_VIEW,uri);
-//                startActivity(intent);
-//                log("uri",uri.toString());
-//        }
-//        return super.onOptionsItemSelected(item);
+//    public long tVDateGetTimeInMillis(){
+//        TextView tv = (TextView) findViewById(R.id.tvDate);
+//        return millis;
 //    }
 
     @Override
-        public boolean onOptionsItemSelected(MenuItem item){
-        switch (item.getItemId()){
+    public boolean onOptionsItemSelected(MenuItem item){
+
+        switch (item.getItemId()) {
             case android.R.id.home:
-                Log.d("debug","入ったよ１");
+                Log.d("selectMenu", "home");
                 finish();
                 return true;
             case R.id.menuSave:
-                EditText etInputTask = findViewById(R.id.etInputTask);
-                String inputTask = etInputTask.getText().toString();
-//                String inputTitle = findViewById(R.id.etInputTitle).toString();//候補
-                if(inputTask.equals("")){
-                    Toast.makeText(ToDoEditActivity.this,R.string.msg_input_message,Toast.LENGTH_SHORT).show();
-                }else{
-                    EditText etInputNote = findViewById(R.id.etInputNote);
-                    String inputNote = etInputNote.getText().toString();
-                    Switch s = (Switch) findViewById(R.id.switch_button);
-
-                    SQLiteDatabase db = _helper.getWritableDatabase();
-                    if(_mode == MainActivity.MODE_INSERT){
-                        long milles = getTimeInMillis();
-                        DataAccess.insert(db,inputTask,milles,defoSwichVal,inputNote);
-                        Log.d("mode","true");
-                    }else{
-                        Log.d("mode","false");
-                    }
-                }
+                Log.d("selectMenu", "save");
+//                EditText etInputTask = findViewById(R.id.etInputTask);
+//                String inputTask = etInputTask.getText().toString();
+////                String inputTitle = findViewById(R.id.etInputTitle).toString();//候補
+//                if (inputTask.equals("")) {
+//                    Toast.makeText(ToDoEditActivity.this, R.string.msg_input_message, Toast.LENGTH_SHORT).show();
+//                    break;
+//                } else {
+//                    EditText etInputNote = findViewById(R.id.etInputNote);
+//                    String inputNote = etInputNote.getText().toString();
+//                    Switch s = (Switch) findViewById(R.id.switch_button);
+//
+//                    SQLiteDatabase db = _helper.getWritableDatabase();
+//                    if (_mode == MainActivity.MODE_INSERT) {
+////                        long milles = getTimeInMillis();
+//                        DataAccess.insert(db, inputTask, milles, defoSwichVal, inputNote);
+//                        Log.d("mode", "true");
+//                    } else {
+//                        Log.d("mode", "false");
+//
+//                        DataAccess.update(db,_idNo,inputTask,)
+//                    }
+//                }
+                finish();
+                return true;
+            case R.id.menuDelete:
+                Log.d("selectMenu", "delete");
+                finish();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -167,6 +170,7 @@ public class ToDoEditActivity extends AppCompatActivity {
     private class DatePickerDialogDateSetListener implements DatePickerDialog.OnDateSetListener{
         @Override
         public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+
             String msg = year+"年"+(month + 1)+"月"+dayOfMonth+"日";
             TextView tvDate = findViewById(R.id.tvDate);
             tvDate.setText(msg);
