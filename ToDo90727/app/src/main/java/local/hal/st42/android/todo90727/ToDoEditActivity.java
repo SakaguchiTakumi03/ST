@@ -17,9 +17,9 @@ public class ToDoEditActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_shop_edit);
+        setContentView(R.layout.activity_to_do_edit);
 
-        _helper = new DatabaseHelper(ShopEditActivity.this);
+        _helper = new DatabaseHelper(ToDoEditActivity.this);
 
         Intent intent = getIntent();
         _mode = intent.getIntExtra("mode",MainActivity.MODE_INSERT);
@@ -28,8 +28,8 @@ public class ToDoEditActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         if(_mode == MainActivity.MODE_INSERT){
-            TextView tvTitleEdit = findViewById(R.id.tvTitleEdit);
-            tvTitleEdit.setText(R.string.tv_title_insert);
+            TextView tvTitleEdit = findViewById(R.id.tvTitleList);
+            tvTitleEdit.setText(R.string.tv_title_edit);
         }else{
             _idNo = intent.getLongExtra("idNo",0);
             SQLiteDatabase db = _helper.getWritableDatabase();
