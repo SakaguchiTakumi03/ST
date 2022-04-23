@@ -16,6 +16,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
     }
 
     @Override
@@ -28,8 +29,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         Intent intent = new Intent(MainActivity.this,ToDoEditActivity.class);
+//        Intent intent = new Intent(getApplication(),ToDoEditActivity.class);
         intent.putExtra("mode",MODE_INSERT);
         startActivity(intent);
+
+//        return super.onOptionsItemSelected(item);
         return true;
     }
 
