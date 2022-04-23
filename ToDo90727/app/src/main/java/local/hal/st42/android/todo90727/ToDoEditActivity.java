@@ -3,9 +3,11 @@ package local.hal.st42.android.todo90727;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.webkit.ConsoleMessage;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,26 +38,26 @@ public class ToDoEditActivity extends AppCompatActivity {
         TextView tvTitleEdit = findViewById(R.id.tvTitleEdit);
         tvTitleEdit.setText(R.string.tv_title_edit);
 
-//        if(_mode == MainActivity.MODE_INSERT){
-//            TextView tvTitleEdit = findViewById(R.id.tvTitleList);
-//            tvTitleEdit.setText(R.string.tv_title_edit);
-//        }else{
-//            _idNo = intent.getLongExtra("idNo",0);
-//            SQLiteDatabase db = _helper.getWritableDatabase();
-//            Shops shopsData = DataAccess.findByPK(db,_idNo);
-//
-//            EditText etInputName = findViewById(R.id.etInputName);
-//            etInputName.setText(shopsData.getName());
-//
-//            EditText etInputTell = findViewById(R.id.etInputTel);
-//            etInputTell.setText(shopsData.getTel());
-//
-//            EditText etInputUrl = findViewById(R.id.etInputUrl);
-//            etInputUrl.setText(shopsData.getUrl());
-//
-//            EditText etInputNote = findViewById(R.id.etInputNote);
-//            etInputNote.setText(shopsData.getNote());
-//        }
+        if(_mode == MainActivity.MODE_INSERT){
+            TextView tvTitleEdit = findViewById(R.id.tvTitleList);
+            tvTitleEdit.setText(R.string.tv_title_edit);
+        }else{
+            _idNo = intent.getLongExtra("idNo",0);
+            SQLiteDatabase db = _helper.getWritableDatabase();
+            ToDo shopsData = DataAccess.findByPK(db,_idNo);
+
+            EditText etInputName = findViewById(R.id.etInputName);
+            etInputName.setText(shopsData.getName());
+
+            EditText etInputTell = findViewById(R.id.etInputTel);
+            etInputTell.setText(shopsData.getTel());
+
+            EditText etInputUrl = findViewById(R.id.etInputUrl);
+            etInputUrl.setText(shopsData.getUrl());
+
+            EditText etInputNote = findViewById(R.id.etInputNote);
+            etInputNote.setText(shopsData.getNote());
+        }
 
     }
 
@@ -76,23 +78,24 @@ public class ToDoEditActivity extends AppCompatActivity {
         return true;
     }
 
-//    public boolean onOptionItemSelected(MenuItem item){
-//        switch (item.getItemId()){
-//            case android.R.id.home:
-//                finish();
-//                return true;
-//            case R.id.menuSave:
-//                EditText etInputTitle = findViewById(R.id.etInputTitle);
-//                String inputTitle = etInputTitle.getText().toString();
-////                String inputTitle = findViewById(R.id.etInputTitle).toString();//候補
-//                if(inputTitle.equals("")){
-//                    Toast.makeText(ToDoEditActivity.this,R.string.msg_input_message,Toast.LENGTH_SHORT).show();
-//                }
-//                return true;
-//        }
-//
-//
-//        return true;
-//    }
+    public boolean onOptionItemSelected(MenuItem item){
+        switch (item.getItemId()){
+            case android.R.id.home:
+                Log.d("debug","入ったよ１");
+                finish();
+                return true;
+            case R.id.menuSave:
+                EditText etInputTitle = findViewById(R.id.etInputTitle);
+                String inputTitle = etInputTitle.getText().toString();
+//                String inputTitle = findViewById(R.id.etInputTitle).toString();//候補
+                if(inputTitle.equals("")){
+                    Toast.makeText(ToDoEditActivity.this,R.string.msg_input_message,Toast.LENGTH_SHORT).show();
+                }
+                return true;
+        }
+
+
+        return true;
+    }
 
 }

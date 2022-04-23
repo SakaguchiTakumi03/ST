@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -32,9 +33,9 @@ public class MainActivity extends AppCompatActivity {
 //        Intent intent = new Intent(getApplication(),ToDoEditActivity.class);
         intent.putExtra("mode",MODE_INSERT);
         startActivity(intent);
-
-//        return super.onOptionsItemSelected(item);
-        return true;
+        Log.d("debug","MainActivity_menuButton");
+        return super.onOptionsItemSelected(item);
+//        return true;
     }
 
 }
