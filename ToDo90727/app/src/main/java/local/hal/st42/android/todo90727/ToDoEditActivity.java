@@ -3,6 +3,7 @@ package local.hal.st42.android.todo90727;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -11,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,7 +30,10 @@ public class ToDoEditActivity extends AppCompatActivity {
     private DatabaseHelper _helper;
 
     private String strNowDate;
-//    private TextView tvDate = findViewById(R.id.tvDate);
+
+    private Calendar cal = Calendar.getInstance();
+
+    private long defoSwichVal = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -40,6 +45,7 @@ public class ToDoEditActivity extends AppCompatActivity {
         Intent intent = getIntent();
         _mode = intent.getIntExtra("mode",MainActivity.MODE_INSERT);
 
+        //戻るボタン
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
@@ -97,27 +103,60 @@ public class ToDoEditActivity extends AppCompatActivity {
         return true;
     }
 
-    public boolean onOptionItemSelected(MenuItem item){
+    public long getTimeInMillis(){
+        long millis = cal.getTimeInMillis();
+        return millis;
+    }
+
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item){
+//        switch (item.getItemId()){
+//            case android.R.id.home:
+//                finish();
+//                return true;
+//            default:
+//                Uri uri = Uri.parse(_articleURL);
+//                Intent intent = new Intent(Intent.ACTION_VIEW,uri);
+//                startActivity(intent);
+//                log("uri",uri.toString());
+//        }
+//        return super.onOptionsItemSelected(item);
+//    }
+
+    @Override
+        public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()){
             case android.R.id.home:
                 Log.d("debug","入ったよ１");
                 finish();
                 return true;
             case R.id.menuSave:
-                EditText etInputTitle = findViewById(R.id.etInputTask);
-                String inputTitle = etInputTitle.getText().toString();
+                EditText etInputTask = findViewById(R.id.etInputTask);
+                String inputTask = etInputTask.getText().toString();
 //                String inputTitle = findViewById(R.id.etInputTitle).toString();//候補
-                if(inputTitle.equals("")){
+                if(inputTask.equals("")){
                     Toast.makeText(ToDoEditActivity.this,R.string.msg_input_message,Toast.LENGTH_SHORT).show();
+                }else{
+                    EditText etInputNote = findViewById(R.id.etInputNote);
+                    String inputNote = etInputNote.getText().toString();
+                    Switch s = (Switch) findViewById(R.id.switch_button);
+
+                    SQLiteDatabase db = _helper.getWritableDatabase();
+                    if(_mode == MainActivity.MODE_INSERT){
+                        long milles = getTimeInMillis();
+                        DataAccess.insert(db,inputTask,milles,defoSwichVal,inputNote);
+                        Log.d("mode","true");
+                    }else{
+                        Log.d("mode","false");
+                    }
                 }
                 return true;
         }
-        return true;
+        return super.onOptionsItemSelected(item);
     }
 
     //tvDateのonClickメソッド
     public void tvDateClick(View view){
-        Calendar cal = Calendar.getInstance();
         int nowYear = cal.get(Calendar.YEAR);
         int nowMonth = cal.get(Calendar.MONTH);
         int nowDayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
@@ -133,6 +172,4 @@ public class ToDoEditActivity extends AppCompatActivity {
             tvDate.setText(msg);
         }
     }
-
-
 }
