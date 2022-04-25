@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,14 +22,22 @@ import android.widget.Toast;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.sql.Date;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.Year;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 
 public class ToDoEditActivity extends AppCompatActivity {
     private int _mode = MainActivity.MODE_INSERT;
     private long _idNo = 0;
+
+    private long longTimeInMillis = 0;
+
     private DatabaseHelper _helper;
 
     private String strNowDate;
@@ -90,8 +99,9 @@ public class ToDoEditActivity extends AppCompatActivity {
             EditText etInputNote = findViewById(R.id.etInputNote);
             etInputNote.setText(todo.getNote());
 
+            tvDate = findViewById(R.id.tvDate);
+            tvDate.setText(dateGetTimeInMillis(todo.getDeadline()));
         }
-
     }
 
     @Override
@@ -111,10 +121,12 @@ public class ToDoEditActivity extends AppCompatActivity {
         return true;
     }
 
-//    public long tVDateGetTimeInMillis(){
-//        TextView tv = (TextView) findViewById(R.id.tvDate);
-//        return millis;
-//    }
+    public String dateGetTimeInMillis(long longTimeInMillis){
+        DateTimeFormatter dtFormat = DateTimeFormatter.ofPattern("yyyy年[]M月[]d日");
+        ZonedDateTime zoneDate = Instant.ofEpochMilli(longTimeInMillis).atZone(ZoneId.systemDefault());
+        String strDate = zoneDate.format(dtFormat);
+        return strDate;
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
@@ -126,28 +138,27 @@ public class ToDoEditActivity extends AppCompatActivity {
                 return true;
             case R.id.menuSave:
                 Log.d("selectMenu", "save");
-//                EditText etInputTask = findViewById(R.id.etInputTask);
-//                String inputTask = etInputTask.getText().toString();
-////                String inputTitle = findViewById(R.id.etInputTitle).toString();//候補
-//                if (inputTask.equals("")) {
-//                    Toast.makeText(ToDoEditActivity.this, R.string.msg_input_message, Toast.LENGTH_SHORT).show();
-//                    break;
-//                } else {
-//                    EditText etInputNote = findViewById(R.id.etInputNote);
-//                    String inputNote = etInputNote.getText().toString();
-//                    Switch s = (Switch) findViewById(R.id.switch_button);
-//
-//                    SQLiteDatabase db = _helper.getWritableDatabase();
-//                    if (_mode == MainActivity.MODE_INSERT) {
-////                        long milles = getTimeInMillis();
-//                        DataAccess.insert(db, inputTask, milles, defoSwichVal, inputNote);
-//                        Log.d("mode", "true");
-//                    } else {
-//                        Log.d("mode", "false");
-//
+                EditText etInputTask = findViewById(R.id.etInputTask);
+                String inputTask = etInputTask.getText().toString();
+//                String inputTitle = findViewById(R.id.etInputTitle).toString();//候補
+                //タスク名未入力処理
+                if (inputTask.equals("")) {
+                    Toast.makeText(ToDoEditActivity.this, R.string.msg_input_message, Toast.LENGTH_SHORT).show();
+                    break;
+                } else {
+                    EditText etInputNote = findViewById(R.id.etInputNote);
+                    String inputNote = etInputNote.getText().toString();
+                    Switch s = (Switch) findViewById(R.id.switch_button);
+                    SQLiteDatabase db = _helper.getWritableDatabase();
+                    if (_mode == MainActivity.MODE_INSERT) {
+                        DataAccess.insert(db, inputTask, longTimeInMillis, defoSwichVal, inputNote);
+                        Log.d("mode", "true");
+                    } else {
+                        Log.d("mode", "false");
+
 //                        DataAccess.update(db,_idNo,inputTask,)
-//                    }
-//                }
+                    }
+                }
                 finish();
                 return true;
             case R.id.menuDelete:
@@ -171,9 +182,13 @@ public class ToDoEditActivity extends AppCompatActivity {
         @Override
         public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
 
-            String msg = year+"年"+(month + 1)+"月"+dayOfMonth+"日";
+            DateTimeFormatter parseFormatter = DateTimeFormatter.ofPattern("yyyy年[]M月[]d日 HH:mm:ss").withZone(ZoneId.systemDefault());
+            ZonedDateTime dt = ZonedDateTime.parse(year+"年"+(month+1)+"月"+dayOfMonth+"日 23:23:23", parseFormatter);
+            longTimeInMillis = dt.toInstant().toEpochMilli();
+            Log.i("millis",Long.toString(longTimeInMillis));
+
             TextView tvDate = findViewById(R.id.tvDate);
-            tvDate.setText(msg);
+            tvDate.setText(dateGetTimeInMillis(longTimeInMillis));
         }
     }
 }
