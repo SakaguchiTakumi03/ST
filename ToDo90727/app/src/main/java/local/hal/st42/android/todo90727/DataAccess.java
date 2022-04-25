@@ -64,7 +64,7 @@ public class DataAccess {
     //さくじょ
     public static int delete(SQLiteDatabase db, long id){
         Log.d("DataAccess","delete");
-        String sql = "DELETE FROM tasks WHERE _id = " + id;
+        String sql = "DELETE FROM tasks WHERE _id = ?";
         SQLiteStatement SQLstmt = db.compileStatement(sql);
         SQLstmt.bindLong(1,id);
         int result = SQLstmt.executeUpdateDelete();

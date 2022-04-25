@@ -17,7 +17,7 @@ public class ToDo {
     public void setDeadline(long _deadline){this._deadline = _deadline;}
 
     public long getDone(){return _done;}
-    public void setDone(long _id){this._done = _done;}
+    public void setDone(long _done){this._done = _done;}
 
     public String getNote(){return _note;}
     public void setNote(String _note){this._note = _note;}

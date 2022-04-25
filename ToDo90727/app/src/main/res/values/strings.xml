@@ -10,4 +10,9 @@
     <string name="switch_button_text">タスク完了：</string>
 <!--    トースト-->
     <string name="msg_input_message">タスク名が未入力です。</string>
+    <string name="dlg_full_msg">削除してもよろしいですか？</string>
+    <string name="dlg_full_toast_ok">削除しました。</string>
+<!--    ダイアログ-->
+    <string name="dlg_btn_ok">はい。</string>
+    <string name="dlg_btn_ng">いいえ。</string>
 </resources>
