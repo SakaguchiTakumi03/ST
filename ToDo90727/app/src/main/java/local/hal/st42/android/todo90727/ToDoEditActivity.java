@@ -99,7 +99,8 @@ public class ToDoEditActivity extends AppCompatActivity {
             etInputNote.setText(todo.getNote());
 
             tvDate = findViewById(R.id.tvDate);
-            tvDate.setText(dateGetTimeInMillis(todo.getDeadline()));
+            tvDate.setText(dateGetTimeInMillis(todo.getDeadline(),"yyyy年[]M月[]d日"));
+            longTimeInMillis = todo.getDeadline();
 
             Switch sButton = findViewById(R.id.switchButton);
             long getButtonVal = todo.getDone();
@@ -127,8 +128,8 @@ public class ToDoEditActivity extends AppCompatActivity {
         return true;
     }
 
-    public String dateGetTimeInMillis(long longTimeInMillis){
-        DateTimeFormatter dtFormat = DateTimeFormatter.ofPattern("yyyy年[]M月[]d日");
+    public String dateGetTimeInMillis(long longTimeInMillis, String format){
+        DateTimeFormatter dtFormat = DateTimeFormatter.ofPattern(format);
         ZonedDateTime zoneDate = Instant.ofEpochMilli(longTimeInMillis).atZone(ZoneId.systemDefault());
         String strDate = zoneDate.format(dtFormat);
         return strDate;
@@ -183,25 +184,24 @@ public class ToDoEditActivity extends AppCompatActivity {
 
     //tvDateのonClickメソッド
     public void tvDateClick(View view) throws ParseException {
-        int nowYear = cal.get(Calendar.YEAR);
-        int nowMonth = cal.get(Calendar.MONTH);
-        int nowDayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
+        int year = cal.get(Calendar.YEAR);
+        System.out.print(cal.get(Calendar.YEAR));
+        System.out.print(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH);
+        int dayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
         TextView tvDate = findViewById(R.id.tvDate);
         if(_mode == MainActivity.MODE_EDIT){
-            String displayDate = tvDate.getText().toString();
+            //エディット時にDBに保存された日時でDatePickerDialogを表示する処理を追加。
+            String strDBMillisDate = dateGetTimeInMillis(longTimeInMillis,"yyyyMMdd");
+            int getEditYear = Integer.parseInt(strDBMillisDate.substring(0,4));
+            int getEditMonth = Integer.parseInt(strDBMillisDate.substring(4,6));
+            int getEditDayOfMonth = Integer.parseInt(strDBMillisDate.substring(6,8));
 
-
-//            エディット時に保存された日時でDatePickerDialogを表示する処理を追加。
-//            SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd");
-//            Date dt = df.parse(displayDate);
-//            String reVersionDate = df.format(dt);
-//            DateTimeFormatter parseFormatter = DateTimeFormatter.ofPattern("yyyy[]M[]d").withZone(ZoneId.systemDefault());
-//            ZonedDateTime dt = ZonedDateTime.parse(displayDate,parseFormatter);
-            Log.d("tvGetCal",displayDate);
-//            Log.d("getParseCal", dt.toString());
-//            Log.d("reVersionDate", reVersionDate);
+            year = getEditYear;
+            month = getEditMonth-1;
+            dayOfMonth = getEditDayOfMonth;
         }
-        DatePickerDialog dateDialog = new DatePickerDialog(ToDoEditActivity.this, new DatePickerDialogDateSetListener(), nowYear, nowMonth, nowDayOfMonth);
+        DatePickerDialog dateDialog = new DatePickerDialog(ToDoEditActivity.this, new DatePickerDialogDateSetListener(), year, month, dayOfMonth);
         dateDialog.show();
     }
 
@@ -215,7 +215,7 @@ public class ToDoEditActivity extends AppCompatActivity {
 
             //Viewに表示する処理
             TextView tvDate = findViewById(R.id.tvDate);
-            tvDate.setText(dateGetTimeInMillis(longTimeInMillis));
+            tvDate.setText(dateGetTimeInMillis(longTimeInMillis,"yyyy年[]M月[]d日"));
         }
     }
 }
