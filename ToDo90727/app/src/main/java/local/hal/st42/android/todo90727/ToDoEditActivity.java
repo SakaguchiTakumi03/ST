@@ -99,7 +99,7 @@ public class ToDoEditActivity extends AppCompatActivity {
             etInputNote.setText(todo.getNote());
 
             tvDate = findViewById(R.id.tvDate);
-            tvDate.setText(dateGetTimeInMillis(todo.getDeadline(),"yyyy年[]M月[]d日"));
+            tvDate.setText(dateGetTimeInMillis(todo.getDeadline(),"yyyy年MM月[dd日"));
             longTimeInMillis = todo.getDeadline();
 
             Switch sButton = findViewById(R.id.switchButton);
@@ -183,24 +183,19 @@ public class ToDoEditActivity extends AppCompatActivity {
     }
 
     //tvDateのonClickメソッド
-    public void tvDateClick(View view) throws ParseException {
-        int year = cal.get(Calendar.YEAR);
-        System.out.print(cal.get(Calendar.YEAR));
-        System.out.print(Calendar.YEAR);
-        int month = cal.get(Calendar.MONTH);
-        int dayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
+    public void tvDateClick(View view) {
         TextView tvDate = findViewById(R.id.tvDate);
-        if(_mode == MainActivity.MODE_EDIT){
-            //エディット時にDBに保存された日時でDatePickerDialogを表示する処理を追加。
-            String strDBMillisDate = dateGetTimeInMillis(longTimeInMillis,"yyyyMMdd");
-            int getEditYear = Integer.parseInt(strDBMillisDate.substring(0,4));
-            int getEditMonth = Integer.parseInt(strDBMillisDate.substring(4,6));
-            int getEditDayOfMonth = Integer.parseInt(strDBMillisDate.substring(6,8));
+        String strDate = tvDate.getText().toString();
+        Log.d("hogehoge",strDate);
+        strDate = strDate.replace("年","");
+        strDate = strDate.replace("月","");
+        strDate = strDate.replace("日","");
+        Log.d("hogehoge",strDate);
 
-            year = getEditYear;
-            month = getEditMonth-1;
-            dayOfMonth = getEditDayOfMonth;
-        }
+        int year =  Integer.parseInt(strDate.substring(0,4));
+        int month  = Integer.parseInt(strDate.substring(4,6)) -1;
+        int dayOfMonth = Integer.parseInt(strDate.substring(6,8));
+
         DatePickerDialog dateDialog = new DatePickerDialog(ToDoEditActivity.this, new DatePickerDialogDateSetListener(), year, month, dayOfMonth);
         dateDialog.show();
     }
@@ -215,7 +210,7 @@ public class ToDoEditActivity extends AppCompatActivity {
 
             //Viewに表示する処理
             TextView tvDate = findViewById(R.id.tvDate);
-            tvDate.setText(dateGetTimeInMillis(longTimeInMillis,"yyyy年[]M月[]d日"));
+            tvDate.setText(dateGetTimeInMillis(longTimeInMillis,"yyyy年MM月dd日"));
         }
     }
 }
