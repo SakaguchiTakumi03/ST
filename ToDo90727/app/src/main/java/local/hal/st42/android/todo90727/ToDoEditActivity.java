@@ -76,7 +76,7 @@ public class ToDoEditActivity extends AppCompatActivity {
 
         if(_mode == MainActivity.MODE_INSERT){
             //insert時の処理
-            button.setEnabled(false);
+//            button.setEnabled(false);
         }
         else{
             //edit時の処理
