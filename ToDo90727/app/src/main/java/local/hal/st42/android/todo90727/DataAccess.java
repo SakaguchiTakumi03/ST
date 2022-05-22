@@ -13,6 +13,20 @@ public class DataAccess {
         return cursor;
     }
 
+    public static Cursor findFinished(SQLiteDatabase db){
+        Log.d("DataAccess","finishedList");
+        String sql = "SELECT * FROM tasks WHERE done = 1";
+        Cursor cursor = db.rawQuery(sql,null);
+        return cursor;
+    }
+
+    public static Cursor findUnFinished(SQLiteDatabase db){
+        Log.d("DataAccess","unfinishedList");
+        String sql = "SELECT * FROM tasks WHERE done = 0";
+        Cursor cursor = db.rawQuery(sql,null);
+        return cursor;
+    }
+
     //ぷらいまりーきー取得
     public static ToDo findByPK(SQLiteDatabase db,long id){
         Log.d("DataAccess","findByPK");
@@ -68,6 +82,21 @@ public class DataAccess {
         SQLiteStatement SQLstmt = db.compileStatement(sql);
         SQLstmt.bindLong(1,id);
         int result = SQLstmt.executeUpdateDelete();
+        return result;
+    }
+
+    public static int changeTaskChecked(SQLiteDatabase db,long id,boolean isChecked){
+        String sql = "UPDATE tasks SET done = ? WHERE _id = ?";
+        SQLiteStatement stmt = db.compileStatement(sql);
+        if(isChecked){
+            Log.d("debug","change_true");
+            stmt.bindLong(1,1);
+        }else {
+            Log.d("debug","change_false");
+            stmt.bindLong(1,0);
+        }
+        stmt.bindLong(2, id);
+        int result = stmt.executeUpdateDelete();
         return result;
     }
 }
