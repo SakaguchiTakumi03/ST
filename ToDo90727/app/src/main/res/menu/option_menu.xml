@@ -6,4 +6,13 @@
         android:icon="@drawable/ic_baseline_playlist_add_24"
         android:title="@string/menu_add"
         app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/menuAllList"
+        android:title="@string/menu_all_list"/>
+    <item
+        android:id="@+id/menuFinished"
+        android:title="@string/menu_finish_list"/>
+    <item
+        android:id="@+id/menuUnFinished"
+        android:title="@string/menu_unFinished_list"/>
 </menu>

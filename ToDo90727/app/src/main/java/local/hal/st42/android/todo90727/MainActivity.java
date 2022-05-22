@@ -70,13 +70,24 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
-        Intent intent = new Intent(MainActivity.this,ToDoEditActivity.class);
-//        Intent intent = new Intent(getApplication(),ToDoEditActivity.class);
-        intent.putExtra("mode",MODE_INSERT);
-        startActivity(intent);
-        Log.d("debug","MainActivity_menuButton");
+        switch (item.getItemId()){
+            case R.id.menuAllList:
+                Log.d("selectMenu","allList");
+                break;
+            case R.id.menuFinished:
+                Log.d("selectMenu","finished");
+                break;
+            case R.id.menuUnFinished:
+                Log.d("selectMenu","unfinished");
+                break;
+            case R.id.menuTransition:
+                Intent intent = new Intent(MainActivity.this,ToDoEditActivity.class);
+                intent.putExtra("mode",MODE_INSERT);
+                startActivity(intent);
+                Log.d("selectMenu","menuTransition");
+                break;
+        }
         return super.onOptionsItemSelected(item);
-//        return true;
     }
 
     @UiThread
