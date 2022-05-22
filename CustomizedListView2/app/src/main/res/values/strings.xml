@@ -1,0 +1,7 @@
+<!--
+ST42 Androidサンプル03 データに応じたリストビューのカスタマイズ
+res/values/string.xmlファイル
+-->
+<resources>
+    <string name="app_name">電話番号リスト</string>
+</resources>

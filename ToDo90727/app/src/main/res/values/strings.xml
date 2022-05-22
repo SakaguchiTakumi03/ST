@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">ToDo</string>
-    <string name="menu_add">要素の追加</string>
     <string name="tv_title_list">タスクリスト</string>
     <string name="tv_title_edit">タスク情報登録</string>
     <string name="tv_input_title">タスク名：</string>
@@ -15,4 +14,9 @@
 <!--    ダイアログ-->
     <string name="dlg_btn_ok">はい。</string>
     <string name="dlg_btn_ng">いいえ。</string>
+<!--    メニュー-->
+    <string name="menu_add">要素の追加</string>
+    <string name="menu_all_list">すべて</string>
+    <string name="menu_finish_list">完了</string>
+    <string name="menu_unFinished_list">未完了</string>
 </resources>

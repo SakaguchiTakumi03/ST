@@ -80,17 +80,12 @@ public class ToDoEditActivity extends AppCompatActivity {
         }
         else{
             //edit時の処理
-            Log.d("MODE_EDIT","入ったよ");
             _idNo = intent.getLongExtra("idNo",0);
 
-            Log.d("selectId",""+String.valueOf(_idNo));
             SQLiteDatabase db = _helper.getWritableDatabase();
 
-            Log.d("MODE_EDIT","db");
 
             ToDo todo = DataAccess.findByPK(db,_idNo);
-
-            Log.d("MODE_EDIT","PK");
 
             EditText etInputTask = findViewById(R.id.etInputTask);
             etInputTask.setText(todo.getName());
@@ -104,7 +99,6 @@ public class ToDoEditActivity extends AppCompatActivity {
 
             Switch sButton = findViewById(R.id.switchButton);
             long getButtonVal = todo.getDone();
-            Log.d("sButtonRe",Long.toString(getButtonVal));
             if(getButtonVal == 1){
                 sButton.setChecked(true);
             }
@@ -140,11 +134,9 @@ public class ToDoEditActivity extends AppCompatActivity {
 
         switch (item.getItemId()) {
             case android.R.id.home:
-                Log.d("selectMenu", "home");
                 finish();
                 return true;
             case R.id.menuSave:
-                Log.d("selectMenu", "save");
                 EditText etInputTask = findViewById(R.id.etInputTask);
                 String inputTask = etInputTask.getText().toString();
                 //タスク名未入力処理
@@ -158,9 +150,7 @@ public class ToDoEditActivity extends AppCompatActivity {
                     SQLiteDatabase db = _helper.getWritableDatabase();
                     if (_mode == MainActivity.MODE_INSERT) {
                         DataAccess.insert(db, inputTask, longTimeInMillis, switchVal, inputNote);
-                        Log.d("mode", "insert");
                     } else {
-                        Log.d("mode", "update");
                         if(tSwitch.isChecked()){
                             switchVal = 1;
                         }
@@ -170,13 +160,9 @@ public class ToDoEditActivity extends AppCompatActivity {
                 finish();
                 return true;
             case R.id.menuDelete:
-                Log.d("selectMenu", "delete1");
                 DialogFragment dialog = new DialogFragment(_helper,_idNo);
-                Log.d("selectMenu", "delete2");
                 FragmentManager manager = getSupportFragmentManager();
-                Log.d("selectMenu", "delete3");
                 dialog.show(manager,"DialogFragment");
-                Log.d("selectMenu", "delete4");
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -186,11 +172,9 @@ public class ToDoEditActivity extends AppCompatActivity {
     public void tvDateClick(View view) {
         TextView tvDate = findViewById(R.id.tvDate);
         String strDate = tvDate.getText().toString();
-        Log.d("hogehoge",strDate);
         strDate = strDate.replace("年","");
         strDate = strDate.replace("月","");
         strDate = strDate.replace("日","");
-        Log.d("hogehoge",strDate);
 
         int year =  Integer.parseInt(strDate.substring(0,4));
         int month  = Integer.parseInt(strDate.substring(4,6)) -1;
