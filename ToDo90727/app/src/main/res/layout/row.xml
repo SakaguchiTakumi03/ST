@@ -13,17 +13,11 @@
     <!--        android:layout_height="wrap_content"-->
     <!--        android:src="@android:drawable/ic_menu_call"/>-->
 
-    <CheckBox
-        android:id="@+id/cbTaskCheckRow"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center|right|end"
-        android:focusable="false" />
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:padding="5dp"
         android:orientation="vertical">
 
         <TextView
@@ -41,6 +35,13 @@
 
 
     </LinearLayout>
+
+    <CheckBox
+        android:id="@+id/cbTaskCheckRow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|right|end"
+        android:focusable="false" />
 
 
 </LinearLayout>
