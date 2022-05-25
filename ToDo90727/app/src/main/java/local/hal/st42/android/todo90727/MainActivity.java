@@ -47,6 +47,8 @@ public class MainActivity extends AppCompatActivity {
 
     private DatabaseHelper _helper;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,15 +61,12 @@ public class MainActivity extends AppCompatActivity {
 
         _helper = new DatabaseHelper(MainActivity.this);
 
-        createListView();
-
     }
 
     @Override
     protected void onResume(){
         super.onResume();
         createListView();
-        setNewCursor();
     }
 
     private void setNewCursor(){
@@ -85,7 +84,6 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
         SimpleCursorAdapter adapter = (SimpleCursorAdapter) _lvToDoList.getAdapter();
-        adapter.setViewBinder(new CustomViewBinder());
         adapter.changeCursor(cursor);
     }
 
@@ -162,49 +160,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void createListView(){
+        SQLiteDatabase db = _helper.getWritableDatabase();
+        Cursor cursor = null;
         switch (_menuCategory){
             case ALL:
-                createAllList();
+                cursor = DataAccess.findAll(db);
                 break;
             case FINISH:
-                createFinishedList();
+                cursor = DataAccess.findFinished(db);
                 break;
             case UNFINISH:
-                createUnFinishedList();
+                cursor = DataAccess.findUnFinished(db);
                 break;
         }
-    }
-
-    private void createAllList(){
-        SQLiteDatabase db = _helper.getWritableDatabase();
-        Cursor cursor = DataAccess.findAll(db);
         String[] from = {"name","deadline","done"};
         int[] to = {R.id.tvNameRow,R.id.tvFixedDateRow,R.id.cbTaskCheckRow};
         SimpleCursorAdapter adapter = new SimpleCursorAdapter(MainActivity.this, R.layout.row,cursor,from,to,0);
         adapter.setViewBinder(new CustomViewBinder());
         _lvToDoList.setAdapter(adapter);
     }
-
-    private void createFinishedList(){
-        SQLiteDatabase db = _helper.getWritableDatabase();
-        Cursor cursor = DataAccess.findFinished(db);
-        String[] from = {"name","deadline","done"};
-        int[] to = {R.id.tvNameRow,R.id.tvFixedDateRow,R.id.cbTaskCheckRow};
-        SimpleCursorAdapter adapter = new SimpleCursorAdapter(MainActivity.this, R.layout.row,cursor,from,to,0);
-        adapter.setViewBinder(new CustomViewBinder());
-        _lvToDoList.setAdapter(adapter);
-    }
-
-    private void createUnFinishedList(){
-        SQLiteDatabase db = _helper.getWritableDatabase();
-        Cursor cursor = DataAccess.findUnFinished(db);
-        String[] from = {"name","deadline","done"};
-        int[] to = {R.id.tvNameRow,R.id.tvFixedDateRow,R.id.cbTaskCheckRow};
-        SimpleCursorAdapter adapter = new SimpleCursorAdapter(MainActivity.this, R.layout.row,cursor,from,to,0);
-        adapter.setViewBinder(new CustomViewBinder());
-        _lvToDoList.setAdapter(adapter);
-    }
-
 
     private class CustomViewBinder implements SimpleCursorAdapter.ViewBinder{
         TextView tvName = null;
@@ -212,6 +186,7 @@ public class MainActivity extends AppCompatActivity {
         CheckBox cbTaskCheck = null;
         @Override
         public boolean setViewValue(View view,Cursor cursor,int columnsIndex){
+//            setNewCursor();
             switch (view.getId()){
                 case R.id.tvNameRow:
                     tvName = (TextView) view;
@@ -226,9 +201,12 @@ public class MainActivity extends AppCompatActivity {
                     ToDoEditActivity toDoEditActivity = new ToDoEditActivity();
                     tvDate = (TextView) view;
                     int getDeadline = cursor.getColumnIndex("deadline");
+                    int getId = cursor.getColumnIndex("_id");
+//                    int getName = cursor.getColumnIndex("name");
                     long deadline = cursor.getLong(getDeadline);
                     String setText = "期限： ";
                     String tempDateStr = toDoEditActivity.dateGetTimeInMillis(deadline,"yyyy年MM月dd日");
+                    Log.d("log_date",tempDateStr+"tempDateDtr");
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
                     Date date = null;
                     try {
@@ -247,16 +225,15 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("log_date",date.toString()+"=date");
                     Log.d("log_date",nowDate.toString()+"=nowDate");
                     if(date.before(nowDate)){
-                        Log.d("log_date","before");
-                        setText += "過ぎてます！！！";
+//                        setText += "過ぎてます！！！";
+                        setText += tempDateStr;
                         tvDate.setText(setText);
                         tvDate.setTextColor(Color.RED);
-//                        tvDate.setTextColor(dc143c);
                     }else if(date.equals(nowDate)){
                         Log.d("log_date","equals");
                         setText += "今日";
                         tvDate.setText(setText);
-                        tvDate.setTextColor(Color.RED);
+                        tvDate.setTextColor(Color.BLUE);
                     }else{
                         Log.d("log_date","after");
                         setText += tempDateStr;
@@ -278,10 +255,10 @@ public class MainActivity extends AppCompatActivity {
                         checked = true;
                         rColor = androidx.appcompat.R.drawable.abc_list_selector_disabled_holo_dark;
                         tvName.setTextColor(Color.DKGRAY);
-                        TextPaint paint = tvName.getPaint();
-                        paint.setFlags(tvName.getPaintFlags()| Paint.STRIKE_THRU_TEXT_FLAG);
-                        paint.setAntiAlias(true);
-                        tvDate.setText("タスク完了");
+//                        TextPaint paint = tvName.getPaint();
+//                        paint.setFlags(tvName.getPaintFlags()| Paint.STRIKE_THRU_TEXT_FLAG);
+//                        paint.setAntiAlias(true);
+//                        tvDate.setText("タスク完了");
                         tvDate.setTextColor(Color.DKGRAY);
                     }
                     row.setBackgroundResource(rColor);

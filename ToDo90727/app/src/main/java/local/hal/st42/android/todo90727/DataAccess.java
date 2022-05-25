@@ -8,21 +8,21 @@ import android.util.Log;
 public class DataAccess {
     public static Cursor findAll(SQLiteDatabase db){
         Log.d("DataAccess","findAll");
-        String sql = "SELECT * FROM tasks";
+        String sql = "SELECT * FROM tasks ORDER BY deadline ASC";
         Cursor cursor = db.rawQuery(sql,null);
         return cursor;
     }
 
     public static Cursor findFinished(SQLiteDatabase db){
         Log.d("DataAccess","finishedList");
-        String sql = "SELECT * FROM tasks WHERE done = 1";
+        String sql = "SELECT * FROM tasks WHERE done = 1 ORDER BY deadline DESC";
         Cursor cursor = db.rawQuery(sql,null);
         return cursor;
     }
 
     public static Cursor findUnFinished(SQLiteDatabase db){
         Log.d("DataAccess","unfinishedList");
-        String sql = "SELECT * FROM tasks WHERE done = 0";
+        String sql = "SELECT * FROM tasks WHERE done = 0 ORDER BY deadline ASC";
         Cursor cursor = db.rawQuery(sql,null);
         return cursor;
     }
