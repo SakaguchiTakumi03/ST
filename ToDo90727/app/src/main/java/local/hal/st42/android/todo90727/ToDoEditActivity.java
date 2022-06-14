@@ -60,8 +60,8 @@ public class ToDoEditActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         //戻るボタン
-//        ActionBar actionBar = getSupportActionBar();
-//        actionBar.setDisplayHomeAsUpEnabled(true);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         TextView tvTitleEdit = findViewById(R.id.tvTitleEdit);
         tvTitleEdit.setText(R.string.tv_title_edit);
