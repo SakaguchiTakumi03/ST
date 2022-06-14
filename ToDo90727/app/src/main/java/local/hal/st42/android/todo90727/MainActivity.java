@@ -1,6 +1,7 @@
 package local.hal.st42.android.todo90727;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -55,9 +56,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         _menuCategory = getSharedPreferences(PREFS_NAME,MODE_PRIVATE).getInt("selectedMenu",DEFAULT_SELECT);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        _lvToDoList = findViewById(R.id.lvToDoList);
-        _lvToDoList.setOnItemClickListener(new ListItemClickListener());
+//        _lvToDoList = findViewById(R.id.lvToDoList);
+//        _lvToDoList.setOnItemClickListener(new ListItemClickListener());
 
         _helper = new DatabaseHelper(MainActivity.this);
 
@@ -66,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume(){
         super.onResume();
-        createListView();
+//        createListView();
     }
 
     private void setNewCursor(){
@@ -173,11 +176,11 @@ public class MainActivity extends AppCompatActivity {
                 cursor = DataAccess.findUnFinished(db);
                 break;
         }
-        String[] from = {"name","deadline","done"};
-        int[] to = {R.id.tvNameRow,R.id.tvFixedDateRow,R.id.cbTaskCheckRow};
-        SimpleCursorAdapter adapter = new SimpleCursorAdapter(MainActivity.this, R.layout.row,cursor,from,to,0);
-        adapter.setViewBinder(new CustomViewBinder());
-        _lvToDoList.setAdapter(adapter);
+//        String[] from = {"name","deadline","done"};
+//        int[] to = {R.id.tvNameRow,R.id.tvFixedDateRow,R.id.cbTaskCheckRow};
+//        SimpleCursorAdapter adapter = new SimpleCursorAdapter(MainActivity.this, R.layout.row,cursor,from,to,0);
+//        adapter.setViewBinder(new CustomViewBinder());
+//        _lvToDoList.setAdapter(adapter);
     }
 
     private class CustomViewBinder implements SimpleCursorAdapter.ViewBinder{
