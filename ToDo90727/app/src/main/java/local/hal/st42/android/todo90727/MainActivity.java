@@ -182,14 +182,18 @@ public class MainActivity extends AppCompatActivity {
 
     public boolean onPrepareOptionsMenu(Menu menu){
         MenuItem menuListOptionTitle = menu.findItem(R.id.menuListOptionTitle);
+        CollapsingToolbarLayout toolbarLayout = findViewById(R.id.toolbarLayout);
         switch (_menuCategory){
             case ALL:
+                toolbarLayout.setTitle("全部！！！！！！！");
                 menuListOptionTitle.setTitle(R.string.menu_all_list);
                 break;
             case FINISH:
+                toolbarLayout.setTitle("完了！！！！！！！");
                 menuListOptionTitle.setTitle(R.string.menu_finish_list);
                 break;
             case UNFINISH:
+                toolbarLayout.setTitle("未完了！！！！！！");
                 menuListOptionTitle.setTitle(R.string.menu_unFinished_list);
                 break;
         }
@@ -198,20 +202,19 @@ public class MainActivity extends AppCompatActivity {
 
     private void createRecyclerView() {
         SQLiteDatabase db = _helper.getWritableDatabase();
-        List<ToDo> menuList;
-        Cursor cursor = null;
+        List<ToDo> todoList;
         switch (_menuCategory){
-            case ALL:
-                cursor = DataAccess.findAll(db);
-                break;
             case FINISH:
-                cursor = DataAccess.findFinished(db);
+                todoList = DataAccess.findFinished(db);
                 break;
             case UNFINISH:
-                cursor = DataAccess.findUnFinished(db);
+                todoList = DataAccess.findUnFinished(db);
+                break;
+            default:
+                todoList = DataAccess.findAll(db);
                 break;
         }
-        ToDoListAdapter adapter = new ToDoListAdapter(menuList);
+        ToDoListAdapter adapter = new ToDoListAdapter(todoList);
         _rvToDo.setAdapter(adapter);
 //        String[] from = {"name","deadline","done"};
 //        int[] to = {R.id.tvNameRow,R.id.tvFixedDateRow,R.id.cbTaskCheckRow};
@@ -220,53 +223,31 @@ public class MainActivity extends AppCompatActivity {
 //        _lvToDoList.setAdapter(adapter);
     }
 
-    /**
-     * リサイクラービューで利用するビューホルダクラス。
-     */
-    private class ToDoViewHolder extends RecyclerView.ViewHolder {
-        /**
-         * メニュー名表示用TextViewフィールド。
-         */
-        public TextView _tvMenuNameRow;
-        /**
-         * 金額表示用TextViewフィールド。
-         */
-        public TextView _tvMenuPriceRow;
+    private class ToDoViewHolder extends RecyclerView.ViewHolder{
+        public TextView _tvNameRow;
+        public TextView _tvFixedDateRow;
+        public TextView _tvTaskCheckRow;
 
-        /**
-         * コンストラクタ。
-         *
-         * @param itemView リスト1行分の画面部品。
-         */
-        public ToDoViewHolder(View itemView) {
+        public ToDoViewHolder(View itemView){
             super(itemView);
-            _tvMenuNameRow = itemView.findViewById(R.id.tvNameRow);
-            _tvMenuPriceRow = itemView.findViewById(R.id.tvDate);
+            _tvNameRow = itemView.findViewById(R.id.tvNameRow);
+            _tvFixedDateRow = itemView.findViewById(R.id.tvFixedDateRow);
+            _tvTaskCheckRow = itemView.findViewById(R.id.cbTaskCheckRow);
         }
     }
 
-    /**
-     * リサイクラービューで利用するアダプタクラス。
-     */
     private class ToDoListAdapter extends RecyclerView.Adapter<ToDoViewHolder> {
-        /**
-         * リストデータを表すフィールド。
-         */
+
         private List<ToDo> _listData;
 
-        /**
-         * コンストラクタ。
-         *
-         * @param listData リストデータ。
-         */
         public ToDoListAdapter(List<ToDo> listData) {
             _listData = listData;
         }
 
         @Override
-        public ToDoViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public ToDoViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
             LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
-            View row = inflater.inflate(R.layout.row, parent, false);
+            View row = inflater.inflate(R.layout.row,parent,false);
             row.setOnClickListener(new ListItemClickListener());
             ToDoViewHolder holder = new ToDoViewHolder(row);
             return holder;
@@ -275,9 +256,12 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(ToDoViewHolder holder, int position) {
             ToDo item = _listData.get(position);
-//            String menuPriceStr = String.valueOf(item.getPrice());
-            holder._tvMenuNameRow.setText(item.getName());
-//            holder._tvMenuPriceRow.setText(menuPriceStr);
+            ToDoEditActivity toDoEditActivity = new ToDoEditActivity();
+
+            String tempDateStr = toDoEditActivity.dateGetTimeInMillis(item.getDeadline(),"yyyy年MM月dd日");
+            holder._tvNameRow.setText(item.getName());
+            holder._tvFixedDateRow.setText(tempDateStr);
+//            holder._tvTaskCheckRow.set
         }
 
         @Override
