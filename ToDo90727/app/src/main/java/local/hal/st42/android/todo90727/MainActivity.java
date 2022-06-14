@@ -127,15 +127,15 @@ public class MainActivity extends AppCompatActivity {
     private class ListItemClickListener implements AdapterView.OnItemClickListener{
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id){
-            Cursor item = (Cursor) parent.getItemAtPosition(position);
-            int idxId = item.getColumnIndex("_id");
-            long idNo = item.getLong(idxId);
-
-            Intent intent = new Intent(MainActivity.this, ToDoEditActivity.class);
-            intent.putExtra("mode",MODE_EDIT);
-            intent.putExtra("idNo",idNo);
-            startActivity(intent);
-        }
+//            Cursor item = (Cursor) parent.getItemAtPosition(position);
+//            int idxId = item.getColumnIndex("_id");
+//            long idNo = item.getLong(idxId);
+//
+//            Intent intent = new Intent(MainActivity.this, ToDoEditActivity.class);
+//            intent.putExtra("mode",MODE_EDIT);
+//            intent.putExtra("idNo",idNo);
+//            startActivity(intent);
+//        }
     }
 
     @Override
@@ -163,11 +163,11 @@ public class MainActivity extends AppCompatActivity {
                 _menuCategory = UNFINISH;
                 editor.putInt("selectedMenu",UNFINISH);
                 break;
-            case R.id.menuTransition:
-                Intent intent = new Intent(MainActivity.this,ToDoEditActivity.class);
-                intent.putExtra("mode",MODE_INSERT);
-                startActivity(intent);
-                break;
+//            case R.id.menuTransition:
+//                Intent intent = new Intent(MainActivity.this,ToDoEditActivity.class);
+//                intent.putExtra("mode",MODE_INSERT);
+//                startActivity(intent);
+//                break;
             default:
                 returnVal = super.onOptionsItemSelected(item);
                 break;
@@ -267,23 +267,6 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public int getItemCount() {
             return _listData.size();
-        }
-    }
-
-    private class ListItemClickListener implements View.OnClickListener {
-        @Override
-        public void onClick(View view) {
-//            TextView tvMenuNameRow = view.findViewById(R.id.tvMenuNameRow);
-//            TextView tvMenuPriceRow = view.findViewById(R.id.tvMenuPriceRow);
-//            String name = tvMenuNameRow.getText().toString();
-//            String price = tvMenuPriceRow.getText().toString();
-//            Bundle extras = new Bundle();
-//            extras.putString("name", name);
-//            extras.putString("price", price);
-//            OrderConfirmDialog dialog = new OrderConfirmDialog();
-//            dialog.setArguments(extras);
-//            FragmentManager manager = getSupportFragmentManager();
-//            dialog.show(manager, "OrderConfirmDialog");
         }
     }
 
