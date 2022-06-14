@@ -1,7 +1,6 @@
 package local.hal.st42.android.todo90727;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -15,7 +14,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.text.TextPaint;
-import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -23,12 +21,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -44,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
     static final int MODE_INSERT = 1;
     static final int MODE_EDIT = 2;
 
-    private ListView _lvToDoList;
+    static RecyclerView _rvToDo;
 
     private int _menuCategory;
 
@@ -58,26 +55,20 @@ public class MainActivity extends AppCompatActivity {
 
     private DatabaseHelper _helper;
 
-    private String titleName = "";
-
-    private RecyclerView _rvToDo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        _menuCategory = getSharedPreferences(PREFS_NAME,MODE_PRIVATE).getInt("selectedMenu",DEFAULT_SELECT);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         CollapsingToolbarLayout toolbarLayout = findViewById(R.id.toolbarLayout);
-        titleName = "ToDoリスト";
-        toolbarLayout.setTitle(titleName);
+        toolbarLayout.setTitle("hogehoge");
         toolbarLayout.setExpandedTitleColor(Color.WHITE);
         toolbarLayout.setCollapsedTitleTextColor(Color.LTGRAY);
 
-//        _lvToDoList = findViewById(R.id.lvToDoList);
-//        _lvToDoList.setOnItemClickListener(new ListItemClickListener());
+        _menuCategory = getSharedPreferences(PREFS_NAME,MODE_PRIVATE).getInt("selectedMenu",DEFAULT_SELECT);
 
         _helper = new DatabaseHelper(MainActivity.this);
 
@@ -100,33 +91,38 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void setSupportActionBar(Toolbar toolbar) {
+    }
+
     @Override
     protected void onResume(){
         super.onResume();
-//        createListView();
+        createRecyclerView();
     }
 
     private void setNewCursor(){
         SQLiteDatabase db = _helper.getWritableDatabase();
         Cursor cursor = null;
+        List<ToDo> taskList;
         switch (_menuCategory){
             case ALL:
-                cursor = DataAccess.findAll(db);
+                taskList = DataAccess.findAll(db);
                 break;
             case FINISH:
-                cursor = DataAccess.findFinished(db);
+                taskList = DataAccess.findFinished(db);
                 break;
             case UNFINISH:
-                cursor = DataAccess.findUnFinished(db);
+                taskList = DataAccess.findUnFinished(db);
                 break;
         }
-        SimpleCursorAdapter adapter = (SimpleCursorAdapter) _lvToDoList.getAdapter();
-        adapter.changeCursor(cursor);
+        // 下記を実行できるように実装
+//        ToDoListAdapter adapter = new ToDoListAdapter(menuList);
+//        _rvToDo.setAdapter(adapter);
     }
 
-    private class ListItemClickListener implements AdapterView.OnItemClickListener{
+    private class ListItemClickListener implements View.OnClickListener{
         @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id){
+        public void onClick(View view){
 //            Cursor item = (Cursor) parent.getItemAtPosition(position);
 //            int idxId = item.getColumnIndex("_id");
 //            long idNo = item.getLong(idxId);
@@ -135,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
 //            intent.putExtra("mode",MODE_EDIT);
 //            intent.putExtra("idNo",idNo);
 //            startActivity(intent);
-//        }
+        }
     }
 
     @Override
@@ -163,11 +159,6 @@ public class MainActivity extends AppCompatActivity {
                 _menuCategory = UNFINISH;
                 editor.putInt("selectedMenu",UNFINISH);
                 break;
-//            case R.id.menuTransition:
-//                Intent intent = new Intent(MainActivity.this,ToDoEditActivity.class);
-//                intent.putExtra("mode",MODE_INSERT);
-//                startActivity(intent);
-//                break;
             default:
                 returnVal = super.onOptionsItemSelected(item);
                 break;
