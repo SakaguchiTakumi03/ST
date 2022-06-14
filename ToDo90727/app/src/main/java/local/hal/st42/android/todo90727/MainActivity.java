@@ -106,34 +106,35 @@ public class MainActivity extends AppCompatActivity {
 //        createListView();
     }
 
-    private void setNewCursor(){
-        SQLiteDatabase db = _helper.getWritableDatabase();
-        Cursor cursor = null;
-        switch (_menuCategory){
-            case ALL:
-                cursor = DataAccess.findAll(db);
-                break;
-            case FINISH:
-                cursor = DataAccess.findFinished(db);
-                break;
-            case UNFINISH:
-                cursor = DataAccess.findUnFinished(db);
-                break;
-        }
-        SimpleCursorAdapter adapter = (SimpleCursorAdapter) _lvToDoList.getAdapter();
-        adapter.changeCursor(cursor);
-    }
+//    private void setNewCursor(){
+//        SQLiteDatabase db = _helper.getWritableDatabase();
+//        Cursor cursor = null;
+//        switch (_menuCategory){
+//            case ALL:
+//                cursor = DataAccess.findAll(db);
+//                break;
+//            case FINISH:
+//                cursor = DataAccess.findFinished(db);
+//                break;
+//            case UNFINISH:
+//                cursor = DataAccess.findUnFinished(db);
+//                break;
+//        }
+//        SimpleCursorAdapter adapter = (SimpleCursorAdapter) _lvToDoList.getAdapter();
+//        adapter.changeCursor(cursor);
+//    }
 
-    private class ListItemClickListener implements AdapterView.OnItemClickListener{
+    private class ListItemClickListener implements View.OnClickListener {
+        private long _id;
+
+        public ListItemClickListener(long id) {_id = id;}
+
         @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id){
-            Cursor item = (Cursor) parent.getItemAtPosition(position);
-            int idxId = item.getColumnIndex("_id");
-            long idNo = item.getLong(idxId);
-
-            Intent intent = new Intent(MainActivity.this, ToDoEditActivity.class);
+        public void onClick(View view) {
+            Intent intent = new Intent(MainActivity.this,ToDoEditActivity.class);
             intent.putExtra("mode",MODE_EDIT);
-            intent.putExtra("idNo",idNo);
+            intent.putExtra("idNo", _id);
+
             startActivity(intent);
         }
     }
@@ -202,17 +203,17 @@ public class MainActivity extends AppCompatActivity {
         Cursor cursor = null;
         switch (_menuCategory){
             case FINISH:
-                cursor = DataAccess.findFinished(db);
+                menuList = DataAccess.findFinished(db);
                 break;
             case UNFINISH:
-                cursor = DataAccess.findUnFinished(db);
+                menuList = DataAccess.findUnFinished(db);
                 break;
             default:
-                cursor = DataAccess.findAll(db);
+                menuList = DataAccess.findAll(db);
                 break;
         }
-//        ToDoListAdapter adapter = new ToDoListAdapter(menuList);
-//        _rvToDo.setAdapter(adapter);
+        ToDoListAdapter adapter = new ToDoListAdapter(menuList);
+        _rvToDo.setAdapter(adapter);
 //        String[] from = {"name","deadline","done"};
 //        int[] to = {R.id.tvNameRow,R.id.tvFixedDateRow,R.id.cbTaskCheckRow};
 //        SimpleCursorAdapter adapter = new SimpleCursorAdapter(MainActivity.this, R.layout.row,cursor,from,to,0);
@@ -220,45 +221,22 @@ public class MainActivity extends AppCompatActivity {
 //        _lvToDoList.setAdapter(adapter);
     }
 
-    /**
-     * リサイクラービューで利用するビューホルダクラス。
-     */
     private class ToDoViewHolder extends RecyclerView.ViewHolder {
-        /**
-         * メニュー名表示用TextViewフィールド。
-         */
-        public TextView _tvMenuNameRow;
-        /**
-         * 金額表示用TextViewフィールド。
-         */
-        public TextView _tvMenuPriceRow;
+        public TextView _tvNameRow;
+        public TextView _tvFixedDateRow;
+        public CheckBox _cbTaskCheckRow;
 
-        /**
-         * コンストラクタ。
-         *
-         * @param itemView リスト1行分の画面部品。
-         */
         public ToDoViewHolder(View itemView) {
             super(itemView);
-            _tvMenuNameRow = itemView.findViewById(R.id.tvNameRow);
-            _tvMenuPriceRow = itemView.findViewById(R.id.tvDate);
+            _tvNameRow = itemView.findViewById(R.id.tvNameRow);
+            _tvFixedDateRow = itemView.findViewById(R.id.tvFixedDateRow);
+            _cbTaskCheckRow = itemView.findViewById(R.id.cbTaskCheckRow);
         }
     }
 
-    /**
-     * リサイクラービューで利用するアダプタクラス。
-     */
     private class ToDoListAdapter extends RecyclerView.Adapter<ToDoViewHolder> {
-        /**
-         * リストデータを表すフィールド。
-         */
         private List<ToDo> _listData;
 
-        /**
-         * コンストラクタ。
-         *
-         * @param listData リストデータ。
-         */
         public ToDoListAdapter(List<ToDo> listData) {
             _listData = listData;
         }
@@ -267,7 +245,6 @@ public class MainActivity extends AppCompatActivity {
         public ToDoViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
             View row = inflater.inflate(R.layout.row, parent, false);
-//            row.setOnClickListener(new ListItemClickListener());
             ToDoViewHolder holder = new ToDoViewHolder(row);
             return holder;
         }
@@ -275,8 +252,11 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(ToDoViewHolder holder, int position) {
             ToDo item = _listData.get(position);
-//            String menuPriceStr = String.valueOf(item.getPrice());
-            holder._tvMenuNameRow.setText(item.getName());
+            ToDoEditActivity toDoEditActivity = new ToDoEditActivity();
+//            String tempDateStr = toDoEditActivity.dateGetTimeInMillis(deadline,"yyyy年MM月dd日");
+            holder.itemView.setOnClickListener(new ListItemClickListener(item.getId()));
+            holder._tvNameRow.setText(item.getName());
+
 //            holder._tvMenuPriceRow.setText(menuPriceStr);
         }
 
@@ -285,23 +265,6 @@ public class MainActivity extends AppCompatActivity {
             return _listData.size();
         }
     }
-
-//    private class ListItemClickListener implements View.OnClickListener {
-//        @Override
-//        public void onClick(View view) {
-//            TextView tvMenuNameRow = view.findViewById(R.id.tvMenuNameRow);
-//            TextView tvMenuPriceRow = view.findViewById(R.id.tvMenuPriceRow);
-//            String name = tvMenuNameRow.getText().toString();
-//            String price = tvMenuPriceRow.getText().toString();
-//            Bundle extras = new Bundle();
-//            extras.putString("name", name);
-//            extras.putString("price", price);
-//            OrderConfirmDialog dialog = new OrderConfirmDialog();
-//            dialog.setArguments(extras);
-//            FragmentManager manager = getSupportFragmentManager();
-//            dialog.show(manager, "OrderConfirmDialog");
-//        }
-//    }
 
 //    private class CustomViewBinder implements SimpleCursorAdapter.ViewBinder{
 //        TextView tvName = null;
@@ -402,7 +365,7 @@ public class MainActivity extends AppCompatActivity {
             long id = (Long) cbTaskCheck.getTag();
             SQLiteDatabase db = _helper.getWritableDatabase();
             DataAccess.changeTaskChecked(db, id, isChecked);
-            setNewCursor();
+//            setNewCursor();
         }
     }
 }
