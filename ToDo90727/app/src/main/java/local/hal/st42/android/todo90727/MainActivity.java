@@ -1,6 +1,11 @@
 package local.hal.st42.android.todo90727;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,10 +17,12 @@ import android.os.Bundle;
 import android.text.TextPaint;
 import android.text.format.DateUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
@@ -23,17 +30,19 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
+import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     static final int MODE_INSERT = 1;
     static final int MODE_EDIT = 2;
-
-    private ListView _lvToDoList;
 
     private int _menuCategory;
 
@@ -47,7 +56,9 @@ public class MainActivity extends AppCompatActivity {
 
     private DatabaseHelper _helper;
 
+    private String titleName = "";
 
+    private RecyclerView _rvToDo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,48 +66,51 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         _menuCategory = getSharedPreferences(PREFS_NAME,MODE_PRIVATE).getInt("selectedMenu",DEFAULT_SELECT);
-
-        _lvToDoList = findViewById(R.id.lvToDoList);
-        _lvToDoList.setOnItemClickListener(new ListItemClickListener());
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        CollapsingToolbarLayout toolbarLayout = findViewById(R.id.toolbarLayout);
+        titleName = "ToDoリスト";
+        toolbarLayout.setTitle(titleName);
+        toolbarLayout.setExpandedTitleColor(Color.WHITE);
+        toolbarLayout.setCollapsedTitleTextColor(Color.LTGRAY);
 
         _helper = new DatabaseHelper(MainActivity.this);
 
+        _rvToDo = findViewById(R.id.rvToDo);
+        LinearLayoutManager layout = new LinearLayoutManager(MainActivity.this);
+        _rvToDo.setLayoutManager(layout);
+        DividerItemDecoration decoration = new DividerItemDecoration(MainActivity.this, layout.getOrientation());
+        _rvToDo.addItemDecoration(decoration);
+        createRecyclerView();
+
+        FloatingActionButton fab = findViewById(R.id.fabAdd);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this,ToDoEditActivity.class);
+                intent.putExtra("mode",MODE_INSERT);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
     protected void onResume(){
         super.onResume();
-        createListView();
+        createRecyclerView();
     }
 
-    private void setNewCursor(){
-        SQLiteDatabase db = _helper.getWritableDatabase();
-        Cursor cursor = null;
-        switch (_menuCategory){
-            case ALL:
-                cursor = DataAccess.findAll(db);
-                break;
-            case FINISH:
-                cursor = DataAccess.findFinished(db);
-                break;
-            case UNFINISH:
-                cursor = DataAccess.findUnFinished(db);
-                break;
-        }
-        SimpleCursorAdapter adapter = (SimpleCursorAdapter) _lvToDoList.getAdapter();
-        adapter.changeCursor(cursor);
-    }
+    private class ListItemClickListener implements View.OnClickListener {
+        private long _id;
 
-    private class ListItemClickListener implements AdapterView.OnItemClickListener{
+        public ListItemClickListener(long id) {_id = id;}
+
         @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id){
-            Cursor item = (Cursor) parent.getItemAtPosition(position);
-            int idxId = item.getColumnIndex("_id");
-            long idNo = item.getLong(idxId);
-
-            Intent intent = new Intent(MainActivity.this, ToDoEditActivity.class);
+        public void onClick(View view) {
+            Intent intent = new Intent(MainActivity.this,ToDoEditActivity.class);
             intent.putExtra("mode",MODE_EDIT);
-            intent.putExtra("idNo",idNo);
+            intent.putExtra("idNo", _id);
+
             startActivity(intent);
         }
     }
@@ -126,18 +140,13 @@ public class MainActivity extends AppCompatActivity {
                 _menuCategory = UNFINISH;
                 editor.putInt("selectedMenu",UNFINISH);
                 break;
-            case R.id.menuTransition:
-                Intent intent = new Intent(MainActivity.this,ToDoEditActivity.class);
-                intent.putExtra("mode",MODE_INSERT);
-                startActivity(intent);
-                break;
             default:
                 returnVal = super.onOptionsItemSelected(item);
                 break;
         }
         editor.apply();
         if(returnVal){
-            createListView();
+            createRecyclerView();
             invalidateOptionsMenu();
         }
         return super.onOptionsItemSelected(item);
@@ -159,115 +168,115 @@ public class MainActivity extends AppCompatActivity {
         return super.onPrepareOptionsMenu(menu);
     }
 
-    private void createListView(){
+    private void createRecyclerView() {
         SQLiteDatabase db = _helper.getWritableDatabase();
+        List<ToDo> menuList;
         Cursor cursor = null;
         switch (_menuCategory){
-            case ALL:
-                cursor = DataAccess.findAll(db);
-                break;
             case FINISH:
-                cursor = DataAccess.findFinished(db);
+                menuList = DataAccess.findFinished(db);
                 break;
             case UNFINISH:
-                cursor = DataAccess.findUnFinished(db);
+                menuList = DataAccess.findUnFinished(db);
+                break;
+            default:
+                menuList = DataAccess.findAll(db);
                 break;
         }
-        String[] from = {"name","deadline","done"};
-        int[] to = {R.id.tvNameRow,R.id.tvFixedDateRow,R.id.cbTaskCheckRow};
-        SimpleCursorAdapter adapter = new SimpleCursorAdapter(MainActivity.this, R.layout.row,cursor,from,to,0);
-        adapter.setViewBinder(new CustomViewBinder());
-        _lvToDoList.setAdapter(adapter);
+        ToDoListAdapter adapter = new ToDoListAdapter(menuList);
+        _rvToDo.setAdapter(adapter);
     }
 
-    private class CustomViewBinder implements SimpleCursorAdapter.ViewBinder{
-        TextView tvName = null;
-        TextView tvDate = null;
-        CheckBox cbTaskCheck = null;
+    private class ToDoViewHolder extends RecyclerView.ViewHolder {
+        public TextView _tvNameRow;
+        public TextView _tvFixedDateRow;
+        public CheckBox _cbTaskCheckRow;
+
+        public ToDoViewHolder(View itemView) {
+            super(itemView);
+            _tvNameRow = itemView.findViewById(R.id.tvNameRow);
+            _tvFixedDateRow = itemView.findViewById(R.id.tvFixedDateRow);
+            _cbTaskCheckRow = itemView.findViewById(R.id.cbTaskCheckRow);
+        }
+    }
+
+    private class ToDoListAdapter extends RecyclerView.Adapter<ToDoViewHolder> {
+        private List<ToDo> _listData;
+
+        public ToDoListAdapter(List<ToDo> listData) {
+            _listData = listData;
+        }
+
         @Override
-        public boolean setViewValue(View view,Cursor cursor,int columnsIndex){
-//            setNewCursor();
-            switch (view.getId()){
-                case R.id.tvNameRow:
-                    tvName = (TextView) view;
-                    String name = cursor.getString(columnsIndex);
-                    tvName.setText(name);
-                    tvName.setTextColor(Color.GRAY);
-                    TextPaint tvNamePaint = tvName.getPaint();
-                    tvNamePaint.setFlags(tvName.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
-                    tvNamePaint.setAntiAlias(false);
-                    return true;
-                case R.id.tvFixedDateRow:
-                    ToDoEditActivity toDoEditActivity = new ToDoEditActivity();
-                    tvDate = (TextView) view;
-                    int getDeadline = cursor.getColumnIndex("deadline");
-                    int getId = cursor.getColumnIndex("_id");
-//                    int getName = cursor.getColumnIndex("name");
-                    long deadline = cursor.getLong(getDeadline);
-                    String setText = "期限： ";
-                    String tempDateStr = toDoEditActivity.dateGetTimeInMillis(deadline,"yyyy年MM月dd日");
-                    Log.d("log_date",tempDateStr+"tempDateDtr");
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
-                    Date date = null;
-                    try {
-                        date = sdf.parse(tempDateStr);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                    Date nowDate = new Date();
-                    Calendar nowCal = Calendar.getInstance();
-                    nowCal.setTime(nowDate);
-                    nowCal.set(Calendar.HOUR_OF_DAY,0);
-                    nowCal.set(Calendar.MINUTE,0);
-                    nowCal.set(Calendar.SECOND,0);
-                    nowCal.set(Calendar.MILLISECOND,0);
-                    nowDate = nowCal.getTime();
-                    Log.d("log_date",date.toString()+"=date");
-                    Log.d("log_date",nowDate.toString()+"=nowDate");
-                    if(date.before(nowDate)){
-//                        setText += "過ぎてます！！！";
-                        setText += tempDateStr;
-                        tvDate.setText(setText);
-                        tvDate.setTextColor(Color.RED);
-                    }else if(date.equals(nowDate)){
-                        Log.d("log_date","equals");
-                        setText += "今日";
-                        tvDate.setText(setText);
-                        tvDate.setTextColor(Color.BLUE);
-                    }else{
-                        Log.d("log_date","after");
-                        setText += tempDateStr;
-                        tvDate.setText(setText);
-                    }
+        public ToDoViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
+            View row = inflater.inflate(R.layout.row, parent, false);
+            ToDoViewHolder holder = new ToDoViewHolder(row);
+            return holder;
+        }
 
-                    Log.d("log_date",tempDateStr);
+        @Override
+        public void onBindViewHolder(ToDoViewHolder holder, int position) {
+            boolean checked = false;
+            ToDo item = _listData.get(position);
 
-                    return true;
-                case R.id.cbTaskCheckRow:
-                    int idIdx = cursor.getColumnIndex("_id");
-                    long id = cursor.getLong(idIdx);
-                    cbTaskCheck = (CheckBox) view;
-                    int taskCheck = cursor.getInt(columnsIndex);
-                    boolean checked = false;
-                    LinearLayout row = (LinearLayout) cbTaskCheck.getParent();
-                    int rColor = androidx.appcompat.R.drawable.abc_list_selector_holo_light;
-                    if(taskCheck == 1){
-                        checked = true;
-                        rColor = androidx.appcompat.R.drawable.abc_list_selector_disabled_holo_dark;
-                        tvName.setTextColor(Color.DKGRAY);
-//                        TextPaint paint = tvName.getPaint();
-//                        paint.setFlags(tvName.getPaintFlags()| Paint.STRIKE_THRU_TEXT_FLAG);
-//                        paint.setAntiAlias(true);
-//                        tvDate.setText("タスク完了");
-                        tvDate.setTextColor(Color.DKGRAY);
-                    }
-                    row.setBackgroundResource(rColor);
-                    cbTaskCheck.setChecked(checked);
-                    cbTaskCheck.setTag(id);
-                    cbTaskCheck.setOnClickListener(new OnCheckBoxClickListener());
-                    return true;
+            ToDoEditActivity toDoEditActivity = new ToDoEditActivity();
+            LinearLayout row = (LinearLayout) holder._cbTaskCheckRow.getParent();
+            int rColor = androidx.appcompat.R.drawable.abc_list_selector_holo_light;
+
+            String tempDateStr = toDoEditActivity.dateGetTimeInMillis(item.getDeadline(),"yyyy年MM月dd日");
+            String setText = "期限：";
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
+            Date date = null;
+            try {
+                date = sdf.parse(tempDateStr);
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
-            return false;
+            Date nowDate = new Date();
+            Calendar nowCal = Calendar.getInstance();
+            nowCal.setTime(nowDate);
+            nowCal.set(Calendar.HOUR_OF_DAY,0);
+            nowCal.set(Calendar.MINUTE,0);
+            nowCal.set(Calendar.SECOND,0);
+            nowCal.set(Calendar.MILLISECOND,0);
+            nowDate = nowCal.getTime();
+            if(date.before(nowDate)){
+                setText += "過ぎてます！！！";
+                holder._tvFixedDateRow.setTextColor(Color.RED);
+            }else if(date.equals(nowDate)){
+                Log.d("log_date","equals");
+                setText += "今日";
+                holder._tvFixedDateRow.setTextColor(Color.BLUE);
+            }else{
+                Log.d("log_date","after");
+                setText += tempDateStr;
+            }
+            if(item.getDone() == 1){
+                checked = true;
+                rColor = androidx.appcompat.R.drawable.abc_list_selector_disabled_holo_dark;
+            }else{
+                checked = false;
+                rColor = androidx.appcompat.R.drawable.abc_list_selector_holo_light;
+            }
+            row.setBackgroundResource(rColor);
+
+            holder._cbTaskCheckRow.setChecked(checked);
+            holder._cbTaskCheckRow.setTag(item.getId());
+
+            holder.itemView.setOnClickListener(new ListItemClickListener(item.getId()));
+            holder._tvNameRow.setText(item.getName());
+            holder._tvFixedDateRow.setText(setText);
+            holder._cbTaskCheckRow.setOnClickListener(new OnCheckBoxClickListener());
+
+
+
+//            holder._tvMenuPriceRow.setText(menuPriceStr);
+        }
+
+        @Override
+        public int getItemCount() {
+            return _listData.size();
         }
     }
 
@@ -279,7 +288,7 @@ public class MainActivity extends AppCompatActivity {
             long id = (Long) cbTaskCheck.getTag();
             SQLiteDatabase db = _helper.getWritableDatabase();
             DataAccess.changeTaskChecked(db, id, isChecked);
-            setNewCursor();
+            createRecyclerView();
         }
     }
 }

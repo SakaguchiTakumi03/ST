@@ -10,12 +10,12 @@
         android:id="@+id/tvTitleEdit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:text="@string/tv_title_edit"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbarToDoEdit" />
 
     <TextView
         android:id="@+id/tvInputTitle"
@@ -97,5 +97,17 @@
         android:text="@string/tv_to_do_date"
         app:layout_constraintStart_toEndOf="@+id/textView"
         app:layout_constraintTop_toBottomOf="@+id/etInputTask" />
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbarToDoEdit"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="@style/Theme.ToolbarSample.AppBarOverlay"
+        app:popupTheme="@style/Theme.ToolbarSample.PopupOverlay"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,14 @@
+<!--
+ST42 Androidサンプル08 リサイクラービュー
+res/values/string.xmlファイル
+-->
+<resources>
+    <string name="app_name">牛丼メニュー改</string>
+    <string name="yen">円</string>
+    <string name="menu_list_don">牛丼</string>
+    <string name="menu_list_curry">カレー</string>
+    <string name="dialog_confirm_title">ご注文</string>
+    <string name="dialog_confirm_message">「%1$s」(%2$s円)を注文します。\nよろしいですか?</string>
+    <string name="dialog_confirm_btn_positive">注文</string>
+    <string name="dialog_confirm_btn_negative">キャンセル</string>
+</resources>
