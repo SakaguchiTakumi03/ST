@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentManager;
 
 import java.text.ParseException;
@@ -55,9 +56,12 @@ public class ToDoEditActivity extends AppCompatActivity {
         Intent intent = getIntent();
         _mode = intent.getIntExtra("mode",MainActivity.MODE_INSERT);
 
+        Toolbar toolbar = findViewById(R.id.toolbarToDoEdit);
+        setSupportActionBar(toolbar);
+
         //戻るボタン
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
+//        ActionBar actionBar = getSupportActionBar();
+//        actionBar.setDisplayHomeAsUpEnabled(true);
 
         TextView tvTitleEdit = findViewById(R.id.tvTitleEdit);
         tvTitleEdit.setText(R.string.tv_title_edit);

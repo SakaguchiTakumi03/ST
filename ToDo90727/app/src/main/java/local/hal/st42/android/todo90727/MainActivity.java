@@ -24,6 +24,8 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -63,6 +65,16 @@ public class MainActivity extends AppCompatActivity {
 //        _lvToDoList.setOnItemClickListener(new ListItemClickListener());
 
         _helper = new DatabaseHelper(MainActivity.this);
+
+        FloatingActionButton fab = findViewById(R.id.fabAdd);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this,ToDoEditActivity.class);
+                intent.putExtra("mode",MODE_INSERT);
+                startActivity(intent);
+            }
+        });
 
     }
 
