@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 
 public class DataAccess {
-    
+
     public static Cursor findAll(SQLiteDatabase db){
         Log.d("DataAccess","findAll");
         String sql = "SELECT * FROM tasks ORDER BY deadline ASC";
