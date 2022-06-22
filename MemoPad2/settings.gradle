@@ -1,0 +1,2 @@
+rootProject.name = "MemoPad2"
+include ':app'
