@@ -32,12 +32,19 @@ import android.widget.TextView;
 
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.common.util.concurrent.ListenableFuture;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+
+import local.hal.st42.android.todo90727.dataaccess.AppDatabase;
+import local.hal.st42.android.todo90727.dataaccess.Tasks;
+import local.hal.st42.android.todo90727.dataaccess.TasksDAO;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -54,7 +61,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int DEFAULT_SELECT = 1;
 
-    private DatabaseHelper _helper;
+//    private DatabaseHelper _helper;
+    private AppDatabase _db;
 
     private String titleName = "";
 
@@ -74,7 +82,9 @@ public class MainActivity extends AppCompatActivity {
         toolbarLayout.setExpandedTitleColor(Color.WHITE);
         toolbarLayout.setCollapsedTitleTextColor(Color.LTGRAY);
 
-        _helper = new DatabaseHelper(MainActivity.this);
+//        _helper = new DatabaseHelper(MainActivity.this);
+
+        _db = AppDatabase.getDatabase(MainActivity.this);
 
         _rvToDo = findViewById(R.id.rvToDo);
         LinearLayoutManager layout = new LinearLayoutManager(MainActivity.this);
@@ -169,21 +179,32 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void createRecyclerView() {
-        SQLiteDatabase db = _helper.getWritableDatabase();
+        TasksDAO tasksDAO = _db.createTasksDAO();
         List<ToDo> menuList;
+        ListenableFuture<List<Tasks>> future;
         Cursor cursor = null;
         switch (_menuCategory){
             case FINISH:
-                menuList = DataAccess.findFinished(db);
+                future = tasksDAO.findFinished();
                 break;
             case UNFINISH:
-                menuList = DataAccess.findUnFinished(db);
+                future = tasksDAO.findUnFinished();
                 break;
             default:
-                menuList = DataAccess.findAll(db);
+                future = tasksDAO.findAll();
                 break;
         }
-        ToDoListAdapter adapter = new ToDoListAdapter(menuList);
+        List<Tasks> tasksList = new ArrayList<>();
+        try{
+            tasksList = future.get();
+        } catch (InterruptedException e) {
+//            e.printStackTrace();
+            Log.e("MainActivity","データ取得処理失敗",e);
+        } catch (ExecutionException e) {
+//            e.printStackTrace();
+            Log.e("MainActivity","データ取得処理失敗",e);
+        }
+        ToDoListAdapter adapter = new ToDoListAdapter(tasksList);
         _rvToDo.setAdapter(adapter);
     }
 
@@ -201,9 +222,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private class ToDoListAdapter extends RecyclerView.Adapter<ToDoViewHolder> {
-        private List<ToDo> _listData;
+        private List<Tasks> _listData;
 
-        public ToDoListAdapter(List<ToDo> listData) {
+        public ToDoListAdapter(List<Tasks> listData) {
             _listData = listData;
         }
 
@@ -218,13 +239,14 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(ToDoViewHolder holder, int position) {
             boolean checked = false;
-            ToDo item = _listData.get(position);
+//            ToDo item = _listData.get(position);
+            Tasks item = _listData.get(position);
 
             ToDoEditActivity toDoEditActivity = new ToDoEditActivity();
             LinearLayout row = (LinearLayout) holder._cbTaskCheckRow.getParent();
             int rColor = androidx.appcompat.R.drawable.abc_list_selector_holo_light;
 
-            String tempDateStr = toDoEditActivity.dateGetTimeInMillis(item.getDeadline(),"yyyy年MM月dd日");
+            String tempDateStr = toDoEditActivity.dateGetTimeInMillis(item.deadline,"yyyy年MM月dd日");
             String setText = "期限：";
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
             Date date = null;
@@ -252,7 +274,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("log_date","after");
                 setText += tempDateStr;
             }
-            if(item.getDone() == 1){
+            if(item.done == 1){
                 checked = true;
                 rColor = androidx.appcompat.R.drawable.abc_list_selector_disabled_holo_dark;
             }else{
@@ -262,10 +284,10 @@ public class MainActivity extends AppCompatActivity {
             row.setBackgroundResource(rColor);
 
             holder._cbTaskCheckRow.setChecked(checked);
-            holder._cbTaskCheckRow.setTag(item.getId());
+            holder._cbTaskCheckRow.setTag(item.id);
 
-            holder.itemView.setOnClickListener(new ListItemClickListener(item.getId()));
-            holder._tvNameRow.setText(item.getName());
+            holder.itemView.setOnClickListener(new ListItemClickListener(item.id));
+            holder._tvNameRow.setText(item.name);
             holder._tvFixedDateRow.setText(setText);
             holder._cbTaskCheckRow.setOnClickListener(new OnCheckBoxClickListener());
 
@@ -283,11 +305,26 @@ public class MainActivity extends AppCompatActivity {
     private class OnCheckBoxClickListener implements View.OnClickListener {
         @Override
         public void onClick(View view) {
+            TasksDAO tasksDAO = _db.createTasksDAO();
             CheckBox cbTaskCheck = (CheckBox) view;
             boolean isChecked = cbTaskCheck.isChecked();
             long id = (Long) cbTaskCheck.getTag();
-            SQLiteDatabase db = _helper.getWritableDatabase();
-            DataAccess.changeTaskChecked(db, id, isChecked);
+//            try{
+            if(isChecked){
+                Log.d("checkedChange","true");
+                tasksDAO.changeTaskChecked(id,0);
+            }else{
+                Log.d("checkedChange","false");
+                tasksDAO.changeTaskChecked(id,1);
+            }
+//            } catch (InterruptedException e) {
+////            e.printStackTrace();
+//                Log.e("MainActivity","データ取得処理失敗",e);
+//            } catch (ExecutionException e) {
+////            e.printStackTrace();
+//                Log.e("MainActivity","データ取得処理失敗",e);
+//            }
+
             createRecyclerView();
         }
     }
