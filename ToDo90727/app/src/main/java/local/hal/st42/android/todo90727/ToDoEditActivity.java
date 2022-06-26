@@ -21,6 +21,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentManager;
 
+import com.google.common.util.concurrent.ListenableFuture;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -30,6 +32,12 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+
+import local.hal.st42.android.todo90727.dataaccess.AppDatabase;
+import local.hal.st42.android.todo90727.dataaccess.Tasks;
+import local.hal.st42.android.todo90727.dataaccess.TasksDAO;
 
 public class ToDoEditActivity extends AppCompatActivity {
     private int _mode = MainActivity.MODE_INSERT;
@@ -38,7 +46,9 @@ public class ToDoEditActivity extends AppCompatActivity {
     //エミュレータの時刻をデフォルト値とする
     private long longTimeInMillis = System.currentTimeMillis();
 
-    private DatabaseHelper _helper;
+//    private DatabaseHelper _helper;
+
+    private AppDatabase _db;
 
     private String strNowDate;
 
@@ -51,7 +61,9 @@ public class ToDoEditActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_to_do_edit);
 
-        _helper = new DatabaseHelper(ToDoEditActivity.this);
+//        _helper = new DatabaseHelper(ToDoEditActivity.this);
+
+        _db = AppDatabase.getDatabase(ToDoEditActivity.this);
 
         Intent intent = getIntent();
         _mode = intent.getIntExtra("mode",MainActivity.MODE_INSERT);
@@ -80,38 +92,54 @@ public class ToDoEditActivity extends AppCompatActivity {
 
         if(_mode == MainActivity.MODE_INSERT){
             //insert時の処理
-//            button.setEnabled(false);
+            button.setEnabled(false);
         }
         else{
             //edit時の処理
             _idNo = intent.getLongExtra("idNo",0);
+            TasksDAO tasksDAO = _db.createTasksDAO();
+            ListenableFuture<Tasks> future = tasksDAO.findByPK((int) _idNo);
+            try{
+                Tasks tasks = future.get();
+                EditText etInputTask = findViewById(R.id.etInputTask);
+                etInputTask.setText(tasks.name);
 
-            SQLiteDatabase db = _helper.getWritableDatabase();
+                EditText etInputNote = findViewById(R.id.etInputNote);
+                etInputNote.setText(tasks.note);
 
+                tvDate = findViewById(R.id.tvDate);
+                tvDate.setText(dateGetTimeInMillis(tasks.deadline,"yyyy年MM月[dd日"));
+                longTimeInMillis = tasks.deadline;
 
-            ToDo todo = DataAccess.findByPK(db,_idNo);
+                Switch sButton = findViewById(R.id.switchButton);
+                if(tasks.done == 1){
+                    sButton.setChecked(true);
+                }else{
+                    sButton.setChecked(false);
+                }
 
-            EditText etInputTask = findViewById(R.id.etInputTask);
-            etInputTask.setText(todo.getName());
-
-            EditText etInputNote = findViewById(R.id.etInputNote);
-            etInputNote.setText(todo.getNote());
-
-            tvDate = findViewById(R.id.tvDate);
-            tvDate.setText(dateGetTimeInMillis(todo.getDeadline(),"yyyy年MM月[dd日"));
-            longTimeInMillis = todo.getDeadline();
-
-            Switch sButton = findViewById(R.id.switchButton);
-            long getButtonVal = todo.getDone();
-            if(getButtonVal == 1){
-                sButton.setChecked(true);
+//            long getButtonVal = todo.getDone();
+            } catch (InterruptedException ex) {
+                Log.e("ToDoEditActivity","データ取得失敗",ex);
+            } catch (ExecutionException ex) {
+                Log.e("ToDoEditActivity","データ取得失敗",ex);
             }
+
+//            SQLiteDatabase db = _helper.getWritableDatabase();
+
+
+//            ToDo todo = DataAccess.findByPK(db,_idNo);
+
+
+//            if(getButtonVal == 1){
+//                sButton.setChecked(true);
+//            }
         }
     }
 
     @Override
     protected void onDestroy(){
-        _helper.close();
+        _db.close();
         super.onDestroy();
     }
 
@@ -142,29 +170,56 @@ public class ToDoEditActivity extends AppCompatActivity {
                 return true;
             case R.id.menuSave:
                 EditText etInputTask = findViewById(R.id.etInputTask);
+                EditText etInputNote = findViewById(R.id.etInputNote);
+                Switch tSwitch = (Switch) findViewById(R.id.switchButton);
                 String inputTask = etInputTask.getText().toString();
+                String inputNote = etInputNote.getText().toString();
                 //タスク名未入力処理
                 if (inputTask.equals("")) {
                     Toast.makeText(ToDoEditActivity.this, R.string.msg_input_message, Toast.LENGTH_SHORT).show();
                     break;
                 } else {
-                    EditText etInputNote = findViewById(R.id.etInputNote);
-                    String inputNote = etInputNote.getText().toString();
-                    Switch tSwitch = (Switch) findViewById(R.id.switchButton);
-                    SQLiteDatabase db = _helper.getWritableDatabase();
-                    if (_mode == MainActivity.MODE_INSERT) {
-                        DataAccess.insert(db, inputTask, longTimeInMillis, switchVal, inputNote);
-                    } else {
-                        if(tSwitch.isChecked()){
-                            switchVal = 1;
+                    TasksDAO tasksDAO = _db.createTasksDAO();
+                    Tasks tasks = new Tasks();
+                    tasks.name = inputTask;
+                    tasks.deadline = longTimeInMillis;
+                    if(tSwitch.isChecked() == true){
+                        tasks.done = 1;
+                    }else {
+                        tasks.done = 0;
+                    }
+                    tasks.note = inputNote;
+                    long result = 0;
+//                    tasks.note = inputNote;
+                    try {
+                        if (_mode == MainActivity.MODE_INSERT) {
+//                        DataAccess.insert(db, inputTask, longTimeInMillis, switchVal, inputNote);
+                            ListenableFuture<Long> future = tasksDAO.insert(tasks);
+                            result = future.get();
+
+                        } else {
+                            if(tSwitch.isChecked()){
+                                switchVal = 1;
+                            }
+//                        DataAccess.update(db, _idNo, inputTask, longTimeInMillis, switchVal, inputNote);
+                            tasks.id = (int) _idNo;
+                            ListenableFuture<Integer> future = tasksDAO.update(tasks);
+                            result = future.get();
                         }
-                        DataAccess.update(db, _idNo, inputTask, longTimeInMillis, switchVal, inputNote);
+                    } catch (InterruptedException ex) {
+                        Log.e("ToDoEditActivity", "データ更新処理失敗", ex);
+                    } catch (ExecutionException ex) {
+                        Log.e("ToDoEditActivity", "データ更新処理失敗", ex);
+                    }
+                    if(result <= 0){
+                        Toast.makeText(ToDoEditActivity.this, "処理失敗",Toast.LENGTH_SHORT).show();
+                    }else{
+                        finish();
                     }
                 }
-                finish();
                 return true;
             case R.id.menuDelete:
-                DialogFragment dialog = new DialogFragment(_helper,_idNo);
+                DialogFragment dialog = new DialogFragment(_db);
                 FragmentManager manager = getSupportFragmentManager();
                 dialog.show(manager,"DialogFragment");
                 return true;

@@ -21,6 +21,9 @@ public interface TasksDAO {
     @Query("SELECT * FROM tasks WHERE done = 0 ORDER BY deadline DESC")
     ListenableFuture<List<Tasks>> findUnFinished();
 
+    @Query("SELECT * FROM tasks WHERE id = :id")
+    ListenableFuture<Tasks>findByPK(int id);
+
     @Insert
     ListenableFuture<Long> insert(Tasks tasks);
 

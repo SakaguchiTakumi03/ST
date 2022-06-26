@@ -1,4 +1,4 @@
-package local.hal.st42.android.todo90727.dataaccess;
+package com.example.todo90032.dataaccess;
 
 import android.content.Context;
 
@@ -7,8 +7,8 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 
-@Database(entities = {Tasks.class}, version = 1 , exportSchema = false)
-//@TypeConverters({TimestampConverter.class})
+@Database(entities = {Tasks.class}, version = 1)
+@TypeConverters({TimestampConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
     private static AppDatabase _instance;
 
@@ -20,5 +20,4 @@ public abstract class AppDatabase extends RoomDatabase {
     }
 
     public abstract TasksDAO createTasksDAO();
-
 }

@@ -9,17 +9,25 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.common.util.concurrent.ListenableFuture;
+
+import java.util.concurrent.ExecutionException;
+
+import local.hal.st42.android.todo90727.dataaccess.AppDatabase;
+import local.hal.st42.android.todo90727.dataaccess.Tasks;
+import local.hal.st42.android.todo90727.dataaccess.TasksDAO;
+
 public class DialogFragment extends androidx.fragment.app.DialogFragment {
 
     private int _mode = MainActivity.MODE_INSERT;
 
     private long _idNo = 0;
 
-    private DatabaseHelper _helper;
+//    private DatabaseHelper _helper;
+    private AppDatabase _db;
 
-    public DialogFragment(DatabaseHelper helper, long idNo){
-        _helper = helper;
-        _idNo = idNo;
+    public DialogFragment(AppDatabase db){
+        _db = db;
     }
 
     @Override
@@ -45,10 +53,25 @@ public class DialogFragment extends androidx.fragment.app.DialogFragment {
 
             if(which == DialogInterface.BUTTON_POSITIVE){
                 msg = getString(R.string.dlg_full_toast_ok);
-                SQLiteDatabase db = _helper.getWritableDatabase();
-                DataAccess.delete(db,_idNo);
-                parent.finish();
-                Toast.makeText(parent,msg,Toast.LENGTH_SHORT).show();
+                Bundle bundle = getArguments();
+                int idNo = bundle.getInt("id",0);
+                Tasks tasks = new Tasks();
+                tasks.id = idNo;
+                TasksDAO tasksDAO = _db.createTasksDAO();
+                long result = 0;
+                ListenableFuture<Integer> future = tasksDAO.delete(tasks);
+                try{
+                    result = future.get();
+                } catch (InterruptedException ex) {
+                    Log.e("DialogFragment", "データ削除処理失敗", ex);
+                } catch (ExecutionException ex) {
+                    Log.e("DialogFragment", "データ削除処理失敗", ex);
+                }
+                if(result <= 0){
+                    Toast.makeText(parent,msg,Toast.LENGTH_SHORT).show();
+                }else {
+                    parent.finish();
+                }
             }
             Log.d("DialogFragment","end");
         }

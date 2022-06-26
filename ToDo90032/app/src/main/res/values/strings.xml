@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">ToDo</string>
+    <string name="tv_title">タスクリスト</string>
+    <string name="btn_new">新規作成</string>
+    <string name="tv_task_edit">タスク情報編集</string>
+    <string name="tv_title_insert">タスク情報登録</string>
+    <string name="tv_task_name">タスク名:</string>
+    <string name="tv_task_deadline">期限:</string>
+    <string name="tv_task_done">完了タスク:</string>
+    <string name="tv_task_note">詳細:</string>
+    <string name="btn_save">保存</string>
+    <string name="btn_delete">削除</string>
+    <string name="msg_input_name">タスク名が入力されていません。</string>
+    <string name="dlg_full_title">タスクの削除</string>
+    <string name="dlg_full_msg">本当に削除してよろしいですか？</string>
+    <string name="dlg_btn_ok">OK</string>
+    <string name="dlg_btn_cancel">キャンセル</string>
+    <string name="menu_display_all">全リスト</string>
+    <string name="menu_display_todo">未完了</string>
+    <string name="menu_display_done">完了</string>
+    <string name="msg_delete_error">データ削除に失敗しました。もう一度、操作を行ってください。</string>
+    <string name="msg_save_error">データ更新に失敗しました。もう一度、操作を行ってください。</string>
+</resources>
