@@ -39,14 +39,14 @@ import local.hal.st42.android.todo90727.dataaccess.AppDatabase;
 import local.hal.st42.android.todo90727.dataaccess.Tasks;
 import local.hal.st42.android.todo90727.dataaccess.TasksDAO;
 
+import static local.hal.st42.android.todo90727.Consts.MODE_INSERT;
+
 public class ToDoEditActivity extends AppCompatActivity {
-    private int _mode = MainActivity.MODE_INSERT;
+    private int _mode = MODE_INSERT;
     private long _idNo = 0;
 
     //エミュレータの時刻をデフォルト値とする
     private long longTimeInMillis = System.currentTimeMillis();
-
-//    private DatabaseHelper _helper;
 
     private AppDatabase _db;
 
@@ -61,12 +61,10 @@ public class ToDoEditActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_to_do_edit);
 
-//        _helper = new DatabaseHelper(ToDoEditActivity.this);
-
         _db = AppDatabase.getDatabase(ToDoEditActivity.this);
 
         Intent intent = getIntent();
-        _mode = intent.getIntExtra("mode",MainActivity.MODE_INSERT);
+        _mode = intent.getIntExtra("mode",MODE_INSERT);
 
         Toolbar toolbar = findViewById(R.id.toolbarToDoEdit);
         setSupportActionBar(toolbar);
@@ -90,7 +88,7 @@ public class ToDoEditActivity extends AppCompatActivity {
 
         Button button = (Button) findViewById(R.id.switchButton);
 
-        if(_mode == MainActivity.MODE_INSERT){
+        if(_mode == MODE_INSERT){
             //insert時の処理
             button.setEnabled(false);
         }
@@ -118,35 +116,23 @@ public class ToDoEditActivity extends AppCompatActivity {
                     sButton.setChecked(false);
                 }
 
-//            long getButtonVal = todo.getDone();
             } catch (InterruptedException ex) {
                 Log.e("ToDoEditActivity","データ取得失敗",ex);
             } catch (ExecutionException ex) {
                 Log.e("ToDoEditActivity","データ取得失敗",ex);
             }
-
-//            SQLiteDatabase db = _helper.getWritableDatabase();
-
-
-//            ToDo todo = DataAccess.findByPK(db,_idNo);
-
-
-//            if(getButtonVal == 1){
-//                sButton.setChecked(true);
-//            }
         }
     }
 
     @Override
     protected void onDestroy(){
-        _db.close();
         super.onDestroy();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
         MenuInflater inflater = getMenuInflater();
-        if(_mode == MainActivity.MODE_INSERT){
+        if(_mode == MODE_INSERT){
             inflater.inflate(R.menu.option_to_do_create_menu,menu);
         }else{
             inflater.inflate(R.menu.option_to_do_edit_menu,menu);
@@ -190,21 +176,19 @@ public class ToDoEditActivity extends AppCompatActivity {
                     }
                     tasks.note = inputNote;
                     long result = 0;
-//                    tasks.note = inputNote;
+                    tasks.note = inputNote;
                     try {
-                        if (_mode == MainActivity.MODE_INSERT) {
-//                        DataAccess.insert(db, inputTask, longTimeInMillis, switchVal, inputNote);
+                        if (_mode == MODE_INSERT) {
                             ListenableFuture<Long> future = tasksDAO.insert(tasks);
+                            Log.d("future_tag","_insert");
                             result = future.get();
-
+//                            _db.close();
                         } else {
-                            if(tSwitch.isChecked()){
-                                switchVal = 1;
-                            }
-//                        DataAccess.update(db, _idNo, inputTask, longTimeInMillis, switchVal, inputNote);
                             tasks.id = (int) _idNo;
                             ListenableFuture<Integer> future = tasksDAO.update(tasks);
+                            Log.d("future_tag","_update");
                             result = future.get();
+//                            _db.close();
                         }
                     } catch (InterruptedException ex) {
                         Log.e("ToDoEditActivity", "データ更新処理失敗", ex);
@@ -212,7 +196,8 @@ public class ToDoEditActivity extends AppCompatActivity {
                         Log.e("ToDoEditActivity", "データ更新処理失敗", ex);
                     }
                     if(result <= 0){
-                        Toast.makeText(ToDoEditActivity.this, "処理失敗",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ToDoEditActivity.this, R.string.msg_save_error,Toast.LENGTH_SHORT).show();
+                        Log.e("save_error","save_error");
                     }else{
                         finish();
                     }
@@ -220,6 +205,9 @@ public class ToDoEditActivity extends AppCompatActivity {
                 return true;
             case R.id.menuDelete:
                 DialogFragment dialog = new DialogFragment(_db);
+                Bundle extras = new Bundle();
+                extras.putInt("id", (int) _idNo);
+                dialog.setArguments(extras);
                 FragmentManager manager = getSupportFragmentManager();
                 dialog.show(manager,"DialogFragment");
                 return true;

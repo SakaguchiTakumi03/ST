@@ -31,7 +31,7 @@ public interface TasksDAO {
     ListenableFuture<Integer> update(Tasks tasks);
 
     @Query("UPDATE tasks SET done = :done WHERE id = :id")
-    ListenableFuture<Integer> changeTaskChecked(long id,int done);
+    ListenableFuture<Integer> changeTaskChecked(int id,int done);
 
     @Delete
     ListenableFuture<Integer> delete(Tasks tasks);

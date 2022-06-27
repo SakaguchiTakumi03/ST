@@ -29,6 +29,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -46,16 +47,22 @@ import local.hal.st42.android.todo90727.dataaccess.AppDatabase;
 import local.hal.st42.android.todo90727.dataaccess.Tasks;
 import local.hal.st42.android.todo90727.dataaccess.TasksDAO;
 
+import static local.hal.st42.android.todo90727.Consts.ALL;
+import static local.hal.st42.android.todo90727.Consts.FINISH;
+import static local.hal.st42.android.todo90727.Consts.MODE_EDIT;
+import static local.hal.st42.android.todo90727.Consts.MODE_INSERT;
+import static local.hal.st42.android.todo90727.Consts.UNFINISH;
+
 public class MainActivity extends AppCompatActivity {
 
-    static final int MODE_INSERT = 1;
-    static final int MODE_EDIT = 2;
+//    static final int MODE_INSERT = 1;
+//    static final int MODE_EDIT = 2;
 
     private int _menuCategory;
 
-    private static final int ALL = 1;
-    private static final int FINISH = 2;
-    private static final int UNFINISH = 3;
+//    private static final int ALL = 1;
+//    private static final int FINISH = 2;
+//    private static final int UNFINISH = 3;
 
     private static final String PREFS_NAME = "PSPrefsFile";
 
@@ -117,6 +124,8 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onClick(View view) {
+//            TextView tvTitleRow = view.findViewById(R.id.tvNameRow);
+//            int idNo = (int) tvTitleRow.getTag();
             Intent intent = new Intent(MainActivity.this,ToDoEditActivity.class);
             intent.putExtra("mode",MODE_EDIT);
             intent.putExtra("idNo", _id);
@@ -179,30 +188,39 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void createRecyclerView() {
-        TasksDAO tasksDAO = _db.createTasksDAO();
-        List<ToDo> menuList;
-        ListenableFuture<List<Tasks>> future;
-        Cursor cursor = null;
         switch (_menuCategory){
             case FINISH:
-                future = tasksDAO.findFinished();
+                createList(FINISH);
                 break;
             case UNFINISH:
-                future = tasksDAO.findUnFinished();
+                createList(UNFINISH);
                 break;
             default:
-                future = tasksDAO.findAll();
+                createList(ALL);
                 break;
         }
+    }
+
+    private void createList(int state){
+        super.onResume();
+        TasksDAO tasksDAO = _db.createTasksDAO();
+        ListenableFuture<List<Tasks>> future;
+        if(state == 1){
+            future = tasksDAO.findAll();
+        }else if(state == 2){
+            future = tasksDAO.findFinished();
+        }else {
+            future = tasksDAO.findUnFinished();
+        }
         List<Tasks> tasksList = new ArrayList<>();
-        try{
+        try {
             tasksList = future.get();
-        } catch (InterruptedException e) {
-//            e.printStackTrace();
-            Log.e("MainActivity","データ取得処理失敗",e);
-        } catch (ExecutionException e) {
-//            e.printStackTrace();
-            Log.e("MainActivity","データ取得処理失敗",e);
+        }
+        catch (ExecutionException ex) {
+            Log.e("MainActivity", "データ取得処理失敗", ex);
+        }
+        catch(InterruptedException ex) {
+            Log.e("MainActivity", "データ取得処理失敗", ex);
         }
         ToDoListAdapter adapter = new ToDoListAdapter(tasksList);
         _rvToDo.setAdapter(adapter);
@@ -285,15 +303,10 @@ public class MainActivity extends AppCompatActivity {
 
             holder._cbTaskCheckRow.setChecked(checked);
             holder._cbTaskCheckRow.setTag(item.id);
-
             holder.itemView.setOnClickListener(new ListItemClickListener(item.id));
             holder._tvNameRow.setText(item.name);
             holder._tvFixedDateRow.setText(setText);
             holder._cbTaskCheckRow.setOnClickListener(new OnCheckBoxClickListener());
-
-
-
-//            holder._tvMenuPriceRow.setText(menuPriceStr);
         }
 
         @Override
@@ -307,25 +320,28 @@ public class MainActivity extends AppCompatActivity {
         public void onClick(View view) {
             TasksDAO tasksDAO = _db.createTasksDAO();
             CheckBox cbTaskCheck = (CheckBox) view;
-            boolean isChecked = cbTaskCheck.isChecked();
-            long id = (Long) cbTaskCheck.getTag();
-//            try{
-            if(isChecked){
-                Log.d("checkedChange","true");
-                tasksDAO.changeTaskChecked(id,0);
+            int isChecked = -1;
+            if(cbTaskCheck.isChecked()){
+                isChecked = 1;
             }else{
-                Log.d("checkedChange","false");
-                tasksDAO.changeTaskChecked(id,1);
+                isChecked = 0;
             }
-//            } catch (InterruptedException e) {
-////            e.printStackTrace();
-//                Log.e("MainActivity","データ取得処理失敗",e);
-//            } catch (ExecutionException e) {
-////            e.printStackTrace();
-//                Log.e("MainActivity","データ取得処理失敗",e);
-//            }
-
-            createRecyclerView();
+//            boolean isChecked = cbTaskCheck.isChecked();
+            int id = (int) cbTaskCheck.getTag();
+            long result = 0;
+            try{
+                ListenableFuture<Integer> future = tasksDAO.changeTaskChecked(id,isChecked);
+                result = future.get();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+            if(result <= 0){
+                Toast.makeText(MainActivity.this , R.string.msg_save_error, Toast.LENGTH_SHORT).show();
+            }
+//            createRecyclerView();
+            onResume();
         }
     }
 }

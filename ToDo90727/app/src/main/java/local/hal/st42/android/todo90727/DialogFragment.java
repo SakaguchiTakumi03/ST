@@ -17,9 +17,11 @@ import local.hal.st42.android.todo90727.dataaccess.AppDatabase;
 import local.hal.st42.android.todo90727.dataaccess.Tasks;
 import local.hal.st42.android.todo90727.dataaccess.TasksDAO;
 
+import static local.hal.st42.android.todo90727.Consts.MODE_INSERT;
+
 public class DialogFragment extends androidx.fragment.app.DialogFragment {
 
-    private int _mode = MainActivity.MODE_INSERT;
+    private int _mode = MODE_INSERT;
 
     private long _idNo = 0;
 
@@ -68,8 +70,9 @@ public class DialogFragment extends androidx.fragment.app.DialogFragment {
                     Log.e("DialogFragment", "データ削除処理失敗", ex);
                 }
                 if(result <= 0){
-                    Toast.makeText(parent,msg,Toast.LENGTH_SHORT).show();
+                    Toast.makeText(parent,R.string.msg_delete_error,Toast.LENGTH_SHORT).show();
                 }else {
+                    Toast.makeText(parent,msg,Toast.LENGTH_SHORT).show();
                     parent.finish();
                 }
             }
