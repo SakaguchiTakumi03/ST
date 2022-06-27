@@ -29,32 +29,47 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.common.util.concurrent.ListenableFuture;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+
+import local.hal.st42.android.todo90727.dataaccess.AppDatabase;
+import local.hal.st42.android.todo90727.dataaccess.Tasks;
+import local.hal.st42.android.todo90727.dataaccess.TasksDAO;
+
+import static local.hal.st42.android.todo90727.Consts.ALL;
+import static local.hal.st42.android.todo90727.Consts.FINISH;
+import static local.hal.st42.android.todo90727.Consts.MODE_EDIT;
+import static local.hal.st42.android.todo90727.Consts.MODE_INSERT;
+import static local.hal.st42.android.todo90727.Consts.UNFINISH;
 
 public class MainActivity extends AppCompatActivity {
 
-    static final int MODE_INSERT = 1;
-    static final int MODE_EDIT = 2;
+//    static final int MODE_INSERT = 1;
+//    static final int MODE_EDIT = 2;
 
     private int _menuCategory;
 
-    private static final int ALL = 1;
-    private static final int FINISH = 2;
-    private static final int UNFINISH = 3;
+//    private static final int ALL = 1;
+//    private static final int FINISH = 2;
+//    private static final int UNFINISH = 3;
 
     private static final String PREFS_NAME = "PSPrefsFile";
 
     private static final int DEFAULT_SELECT = 1;
 
-    private DatabaseHelper _helper;
+//    private DatabaseHelper _helper;
+    private AppDatabase _db;
 
     private String titleName = "";
 
@@ -74,7 +89,9 @@ public class MainActivity extends AppCompatActivity {
         toolbarLayout.setExpandedTitleColor(Color.WHITE);
         toolbarLayout.setCollapsedTitleTextColor(Color.LTGRAY);
 
-        _helper = new DatabaseHelper(MainActivity.this);
+//        _helper = new DatabaseHelper(MainActivity.this);
+
+        _db = AppDatabase.getDatabase(MainActivity.this);
 
         _rvToDo = findViewById(R.id.rvToDo);
         LinearLayoutManager layout = new LinearLayoutManager(MainActivity.this);
@@ -107,6 +124,8 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onClick(View view) {
+//            TextView tvTitleRow = view.findViewById(R.id.tvNameRow);
+//            int idNo = (int) tvTitleRow.getTag();
             Intent intent = new Intent(MainActivity.this,ToDoEditActivity.class);
             intent.putExtra("mode",MODE_EDIT);
             intent.putExtra("idNo", _id);
@@ -169,21 +188,41 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void createRecyclerView() {
-        SQLiteDatabase db = _helper.getWritableDatabase();
-        List<ToDo> menuList;
-        Cursor cursor = null;
         switch (_menuCategory){
             case FINISH:
-                menuList = DataAccess.findFinished(db);
+                createList(FINISH);
                 break;
             case UNFINISH:
-                menuList = DataAccess.findUnFinished(db);
+                createList(UNFINISH);
                 break;
             default:
-                menuList = DataAccess.findAll(db);
+                createList(ALL);
                 break;
         }
-        ToDoListAdapter adapter = new ToDoListAdapter(menuList);
+    }
+
+    private void createList(int state){
+        super.onResume();
+        TasksDAO tasksDAO = _db.createTasksDAO();
+        ListenableFuture<List<Tasks>> future;
+        if(state == 1){
+            future = tasksDAO.findAll();
+        }else if(state == 2){
+            future = tasksDAO.findFinished();
+        }else {
+            future = tasksDAO.findUnFinished();
+        }
+        List<Tasks> tasksList = new ArrayList<>();
+        try {
+            tasksList = future.get();
+        }
+        catch (ExecutionException ex) {
+            Log.e("MainActivity", "データ取得処理失敗", ex);
+        }
+        catch(InterruptedException ex) {
+            Log.e("MainActivity", "データ取得処理失敗", ex);
+        }
+        ToDoListAdapter adapter = new ToDoListAdapter(tasksList);
         _rvToDo.setAdapter(adapter);
     }
 
@@ -201,9 +240,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private class ToDoListAdapter extends RecyclerView.Adapter<ToDoViewHolder> {
-        private List<ToDo> _listData;
+        private List<Tasks> _listData;
 
-        public ToDoListAdapter(List<ToDo> listData) {
+        public ToDoListAdapter(List<Tasks> listData) {
             _listData = listData;
         }
 
@@ -218,13 +257,14 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(ToDoViewHolder holder, int position) {
             boolean checked = false;
-            ToDo item = _listData.get(position);
+//            ToDo item = _listData.get(position);
+            Tasks item = _listData.get(position);
 
             ToDoEditActivity toDoEditActivity = new ToDoEditActivity();
             LinearLayout row = (LinearLayout) holder._cbTaskCheckRow.getParent();
             int rColor = androidx.appcompat.R.drawable.abc_list_selector_holo_light;
 
-            String tempDateStr = toDoEditActivity.dateGetTimeInMillis(item.getDeadline(),"yyyy年MM月dd日");
+            String tempDateStr = toDoEditActivity.dateGetTimeInMillis(item.deadline,"yyyy年MM月dd日");
             String setText = "期限：";
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
             Date date = null;
@@ -252,7 +292,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("log_date","after");
                 setText += tempDateStr;
             }
-            if(item.getDone() == 1){
+            if(item.done == 1){
                 checked = true;
                 rColor = androidx.appcompat.R.drawable.abc_list_selector_disabled_holo_dark;
             }else{
@@ -262,16 +302,11 @@ public class MainActivity extends AppCompatActivity {
             row.setBackgroundResource(rColor);
 
             holder._cbTaskCheckRow.setChecked(checked);
-            holder._cbTaskCheckRow.setTag(item.getId());
-
-            holder.itemView.setOnClickListener(new ListItemClickListener(item.getId()));
-            holder._tvNameRow.setText(item.getName());
+            holder._cbTaskCheckRow.setTag(item.id);
+            holder.itemView.setOnClickListener(new ListItemClickListener(item.id));
+            holder._tvNameRow.setText(item.name);
             holder._tvFixedDateRow.setText(setText);
             holder._cbTaskCheckRow.setOnClickListener(new OnCheckBoxClickListener());
-
-
-
-//            holder._tvMenuPriceRow.setText(menuPriceStr);
         }
 
         @Override
@@ -283,12 +318,30 @@ public class MainActivity extends AppCompatActivity {
     private class OnCheckBoxClickListener implements View.OnClickListener {
         @Override
         public void onClick(View view) {
+            TasksDAO tasksDAO = _db.createTasksDAO();
             CheckBox cbTaskCheck = (CheckBox) view;
-            boolean isChecked = cbTaskCheck.isChecked();
-            long id = (Long) cbTaskCheck.getTag();
-            SQLiteDatabase db = _helper.getWritableDatabase();
-            DataAccess.changeTaskChecked(db, id, isChecked);
-            createRecyclerView();
+            int isChecked = -1;
+            if(cbTaskCheck.isChecked()){
+                isChecked = 1;
+            }else{
+                isChecked = 0;
+            }
+//            boolean isChecked = cbTaskCheck.isChecked();
+            int id = (int) cbTaskCheck.getTag();
+            long result = 0;
+            try{
+                ListenableFuture<Integer> future = tasksDAO.changeTaskChecked(id,isChecked);
+                result = future.get();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+            if(result <= 0){
+                Toast.makeText(MainActivity.this , R.string.msg_save_error, Toast.LENGTH_SHORT).show();
+            }
+//            createRecyclerView();
+            onResume();
         }
     }
 }
