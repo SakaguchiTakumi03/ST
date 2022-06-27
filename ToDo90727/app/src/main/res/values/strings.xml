@@ -19,4 +19,7 @@
     <string name="menu_all_list">すべて</string>
     <string name="menu_finish_list">完了</string>
     <string name="menu_unFinished_list">未完了</string>
+<!--    エラー-->
+    <string name="msg_save_error">データ更新に失敗しました。もう一度、操作を行ってください。</string>
+    <string name="msg_delete_error">データ削除に失敗しました。もう一度、操作を行ってください。</string>
 </resources>
