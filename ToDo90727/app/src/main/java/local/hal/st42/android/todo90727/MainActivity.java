@@ -1,21 +1,9 @@
 package local.hal.st42.android.todo90727;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.FragmentManager;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.os.Bundle;
-import android.text.TextPaint;
-import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -23,23 +11,26 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.text.ParseException;
+import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -53,22 +44,15 @@ import static local.hal.st42.android.todo90727.Consts.MODE_EDIT;
 import static local.hal.st42.android.todo90727.Consts.MODE_INSERT;
 import static local.hal.st42.android.todo90727.Consts.UNFINISH;
 
+
 public class MainActivity extends AppCompatActivity {
 
-//    static final int MODE_INSERT = 1;
-//    static final int MODE_EDIT = 2;
-
     private int _menuCategory;
-
-//    private static final int ALL = 1;
-//    private static final int FINISH = 2;
-//    private static final int UNFINISH = 3;
 
     private static final String PREFS_NAME = "PSPrefsFile";
 
     private static final int DEFAULT_SELECT = 1;
 
-//    private DatabaseHelper _helper;
     private AppDatabase _db;
 
     private String titleName = "";
@@ -88,8 +72,6 @@ public class MainActivity extends AppCompatActivity {
         toolbarLayout.setTitle(titleName);
         toolbarLayout.setExpandedTitleColor(Color.WHITE);
         toolbarLayout.setCollapsedTitleTextColor(Color.LTGRAY);
-
-//        _helper = new DatabaseHelper(MainActivity.this);
 
         _db = AppDatabase.getDatabase(MainActivity.this);
 
@@ -124,8 +106,6 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onClick(View view) {
-//            TextView tvTitleRow = view.findViewById(R.id.tvNameRow);
-//            int idNo = (int) tvTitleRow.getTag();
             Intent intent = new Intent(MainActivity.this,ToDoEditActivity.class);
             intent.putExtra("mode",MODE_EDIT);
             intent.putExtra("idNo", _id);
@@ -264,23 +244,23 @@ public class MainActivity extends AppCompatActivity {
             LinearLayout row = (LinearLayout) holder._cbTaskCheckRow.getParent();
             int rColor = androidx.appcompat.R.drawable.abc_list_selector_holo_light;
 
-            String tempDateStr = toDoEditActivity.dateGetTimeInMillis(item.deadline,"yyyy年MM月dd日");
+            String tempDateStr = toDoEditActivity.dateGetTimeInMillis(item.deadline.getTime(),"yyyy-MM-dd");
             String setText = "期限：";
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
-            Date date = null;
+            Date date = new Date(System.currentTimeMillis());
             try {
-                date = sdf.parse(tempDateStr);
+                date = (Date) sdf.parse(tempDateStr);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            Date nowDate = new Date();
+            Date nowDate = new Date(System.currentTimeMillis());
             Calendar nowCal = Calendar.getInstance();
             nowCal.setTime(nowDate);
             nowCal.set(Calendar.HOUR_OF_DAY,0);
             nowCal.set(Calendar.MINUTE,0);
             nowCal.set(Calendar.SECOND,0);
             nowCal.set(Calendar.MILLISECOND,0);
-            nowDate = nowCal.getTime();
+            nowDate = (Date) nowCal.getTime();
             if(date.before(nowDate)){
                 setText += "過ぎてます！！！";
                 holder._tvFixedDateRow.setTextColor(Color.RED);
@@ -326,7 +306,6 @@ public class MainActivity extends AppCompatActivity {
             }else{
                 isChecked = 0;
             }
-//            boolean isChecked = cbTaskCheck.isChecked();
             int id = (int) cbTaskCheck.getTag();
             long result = 0;
             try{
@@ -340,7 +319,6 @@ public class MainActivity extends AppCompatActivity {
             if(result <= 0){
                 Toast.makeText(MainActivity.this , R.string.msg_save_error, Toast.LENGTH_SHORT).show();
             }
-//            createRecyclerView();
             onResume();
         }
     }
