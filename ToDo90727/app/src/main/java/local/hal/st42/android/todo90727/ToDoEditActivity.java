@@ -2,7 +2,6 @@ package local.hal.st42.android.todo90727;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -23,16 +22,13 @@ import androidx.fragment.app.FragmentManager;
 
 import com.google.common.util.concurrent.ListenableFuture;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.sql.Date;
 import java.util.concurrent.ExecutionException;
 
 import local.hal.st42.android.todo90727.dataaccess.AppDatabase;
@@ -106,8 +102,8 @@ public class ToDoEditActivity extends AppCompatActivity {
                 etInputNote.setText(tasks.note);
 
                 tvDate = findViewById(R.id.tvDate);
-                tvDate.setText(dateGetTimeInMillis(tasks.deadline,"yyyy年MM月[dd日"));
-                longTimeInMillis = tasks.deadline;
+                tvDate.setText(dateGetTimeInMillis(tasks.deadline.getTime(),"yyyy年MM月[dd日"));
+                longTimeInMillis = tasks.deadline.getTime();
 
                 Switch sButton = findViewById(R.id.switchButton);
                 if(tasks.done == 1){
@@ -168,7 +164,7 @@ public class ToDoEditActivity extends AppCompatActivity {
                     TasksDAO tasksDAO = _db.createTasksDAO();
                     Tasks tasks = new Tasks();
                     tasks.name = inputTask;
-                    tasks.deadline = longTimeInMillis;
+                    tasks.deadline = new Date(longTimeInMillis);
                     if(tSwitch.isChecked() == true){
                         tasks.done = 1;
                     }else {
@@ -182,13 +178,11 @@ public class ToDoEditActivity extends AppCompatActivity {
                             ListenableFuture<Long> future = tasksDAO.insert(tasks);
                             Log.d("future_tag","_insert");
                             result = future.get();
-//                            _db.close();
                         } else {
                             tasks.id = (int) _idNo;
                             ListenableFuture<Integer> future = tasksDAO.update(tasks);
                             Log.d("future_tag","_update");
                             result = future.get();
-//                            _db.close();
                         }
                     } catch (InterruptedException ex) {
                         Log.e("ToDoEditActivity", "データ更新処理失敗", ex);
@@ -204,6 +198,7 @@ public class ToDoEditActivity extends AppCompatActivity {
                 }
                 return true;
             case R.id.menuDelete:
+                Log.d("hgoehoge",_db.toString());
                 DialogFragment dialog = new DialogFragment(_db);
                 Bundle extras = new Bundle();
                 extras.putInt("id", (int) _idNo);
