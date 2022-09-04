@@ -1,0 +1,12 @@
+<!--
+ST42 Androidサンプル12 LiveData
+res/values/string.xmlファイル
+-->
+<resources>
+    <string name="app_name">LiveDataサンプル</string>
+    <string name="tv_lb_height">縦:</string>
+    <string name="tv_lb_width">横:</string>
+    <string name="tv_lb_area">面積:</string>
+    <string name="bt_start">開始</string>
+    <string name="bt_stop">停止</string>
+</resources>
