@@ -1,0 +1,2 @@
+rootProject.name = "CalcDivideSample2"
+include ':app'
