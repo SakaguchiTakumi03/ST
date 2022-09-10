@@ -279,10 +279,14 @@ public class MainActivity extends AppCompatActivity {
             }else{
                 Log.d("log_date","after");
                 setText += tempDateStr;
+                holder._tvFixedDateRow.setTextColor(Color.GRAY);
             }
             if(item.done == 1){
                 checked = true;
                 rColor = androidx.appcompat.R.drawable.abc_list_selector_disabled_holo_dark;
+//                setText = "期限："+ tempDateStr;
+                setText = "タスク完了";
+                holder._tvFixedDateRow.setTextColor(Color.BLACK);
             }else{
                 checked = false;
                 rColor = androidx.appcompat.R.drawable.abc_list_selector_holo_light;
