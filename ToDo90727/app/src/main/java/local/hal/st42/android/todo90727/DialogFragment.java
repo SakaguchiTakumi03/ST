@@ -16,6 +16,7 @@ import java.util.concurrent.ExecutionException;
 import local.hal.st42.android.todo90727.dataaccess.AppDatabase;
 import local.hal.st42.android.todo90727.dataaccess.Tasks;
 import local.hal.st42.android.todo90727.dataaccess.TasksDAO;
+import local.hal.st42.android.todo90727.viewmodel.ToDoEditViewModel;
 
 import static local.hal.st42.android.todo90727.Consts.MODE_INSERT;
 
@@ -26,10 +27,12 @@ public class DialogFragment extends androidx.fragment.app.DialogFragment {
     private long _idNo = 0;
 
 //    private DatabaseHelper _helper;
-    private AppDatabase _db;
+//    private AppDatabase _db;
 
-    public DialogFragment(AppDatabase db){
-        _db = db;
+    private ToDoEditViewModel _todoEditViewModel;
+
+    public DialogFragment(ToDoEditViewModel toDoEditViewModel){
+        _todoEditViewModel = toDoEditViewModel;
     }
 
     @Override
@@ -59,16 +62,7 @@ public class DialogFragment extends androidx.fragment.app.DialogFragment {
                 int idNo = bundle.getInt("id",0);
                 Tasks tasks = new Tasks();
                 tasks.id = idNo;
-                TasksDAO tasksDAO = _db.createTasksDAO();
-                long result = 0;
-                ListenableFuture<Integer> future = tasksDAO.delete(tasks);
-                try{
-                    result = future.get();
-                } catch (InterruptedException ex) {
-                    Log.e("DialogFragment", "データ削除処理失敗", ex);
-                } catch (ExecutionException ex) {
-                    Log.e("DialogFragment", "データ削除処理失敗", ex);
-                }
+                int result = _todoEditViewModel.delete(idNo);
                 if(result <= 0){
                     Toast.makeText(parent,R.string.msg_delete_error,Toast.LENGTH_SHORT).show();
                 }else {

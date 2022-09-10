@@ -19,6 +19,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.common.util.concurrent.ListenableFuture;
 
@@ -34,6 +35,7 @@ import java.util.concurrent.ExecutionException;
 import local.hal.st42.android.todo90727.dataaccess.AppDatabase;
 import local.hal.st42.android.todo90727.dataaccess.Tasks;
 import local.hal.st42.android.todo90727.dataaccess.TasksDAO;
+import local.hal.st42.android.todo90727.viewmodel.ToDoEditViewModel;
 
 import static local.hal.st42.android.todo90727.Consts.MODE_INSERT;
 
@@ -44,7 +46,9 @@ public class ToDoEditActivity extends AppCompatActivity {
     //エミュレータの時刻をデフォルト値とする
     private long longTimeInMillis = System.currentTimeMillis();
 
-    private AppDatabase _db;
+//    private AppDatabase _db;
+
+    private ToDoEditViewModel _todoEditViewModel;
 
     private String strNowDate;
 
@@ -57,7 +61,10 @@ public class ToDoEditActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_to_do_edit);
 
-        _db = AppDatabase.getDatabase(ToDoEditActivity.this);
+        ViewModelProvider provider = new ViewModelProvider(ToDoEditActivity.this);
+        _todoEditViewModel = provider.get(ToDoEditViewModel.class);
+
+//        _db = AppDatabase.getDatabase(ToDoEditActivity.this);
 
         Intent intent = getIntent();
         _mode = intent.getIntExtra("mode",MODE_INSERT);
@@ -91,31 +98,24 @@ public class ToDoEditActivity extends AppCompatActivity {
         else{
             //edit時の処理
             _idNo = intent.getLongExtra("idNo",0);
-            TasksDAO tasksDAO = _db.createTasksDAO();
-            ListenableFuture<Tasks> future = tasksDAO.findByPK((int) _idNo);
-            try{
-                Tasks tasks = future.get();
-                EditText etInputTask = findViewById(R.id.etInputTask);
-                etInputTask.setText(tasks.name);
 
-                EditText etInputNote = findViewById(R.id.etInputNote);
-                etInputNote.setText(tasks.note);
+            Tasks tasks = _todoEditViewModel.getTasks((int) _idNo);
 
-                tvDate = findViewById(R.id.tvDate);
-                tvDate.setText(dateGetTimeInMillis(tasks.deadline.getTime(),"yyyy年MM月[dd日"));
-                longTimeInMillis = tasks.deadline.getTime();
+            EditText etInputTask = findViewById(R.id.etInputTask);
+            etInputTask.setText(tasks.name);
 
-                Switch sButton = findViewById(R.id.switchButton);
-                if(tasks.done == 1){
-                    sButton.setChecked(true);
-                }else{
-                    sButton.setChecked(false);
-                }
+            EditText etInputNote = findViewById(R.id.etInputNote);
+            etInputNote.setText(tasks.note);
 
-            } catch (InterruptedException ex) {
-                Log.e("ToDoEditActivity","データ取得失敗",ex);
-            } catch (ExecutionException ex) {
-                Log.e("ToDoEditActivity","データ取得失敗",ex);
+            tvDate = findViewById(R.id.tvDate);
+            tvDate.setText(dateGetTimeInMillis(tasks.deadline.getTime(),"yyyy年MM月[dd日"));
+            longTimeInMillis = tasks.deadline.getTime();
+
+            Switch sButton = findViewById(R.id.switchButton);
+            if(tasks.done == 1){
+                sButton.setChecked(true);
+            }else{
+                sButton.setChecked(false);
             }
         }
     }
@@ -161,7 +161,6 @@ public class ToDoEditActivity extends AppCompatActivity {
                     Toast.makeText(ToDoEditActivity.this, R.string.msg_input_message, Toast.LENGTH_SHORT).show();
                     break;
                 } else {
-                    TasksDAO tasksDAO = _db.createTasksDAO();
                     Tasks tasks = new Tasks();
                     tasks.name = inputTask;
                     tasks.deadline = new Date(longTimeInMillis);
@@ -173,21 +172,13 @@ public class ToDoEditActivity extends AppCompatActivity {
                     tasks.note = inputNote;
                     long result = 0;
                     tasks.note = inputNote;
-                    try {
-                        if (_mode == MODE_INSERT) {
-                            ListenableFuture<Long> future = tasksDAO.insert(tasks);
-                            Log.d("future_tag","_insert");
-                            result = future.get();
-                        } else {
-                            tasks.id = (int) _idNo;
-                            ListenableFuture<Integer> future = tasksDAO.update(tasks);
-                            Log.d("future_tag","_update");
-                            result = future.get();
-                        }
-                    } catch (InterruptedException ex) {
-                        Log.e("ToDoEditActivity", "データ更新処理失敗", ex);
-                    } catch (ExecutionException ex) {
-                        Log.e("ToDoEditActivity", "データ更新処理失敗", ex);
+                    if (_mode == MODE_INSERT) {
+                        result = _todoEditViewModel.insert(tasks);
+                        Log.d("future_tag","_insert");
+                    } else {
+                        tasks.id = (int) _idNo;
+                        result = _todoEditViewModel.update(tasks);
+                        Log.d("future_tag","_update");
                     }
                     if(result <= 0){
                         Toast.makeText(ToDoEditActivity.this, R.string.msg_save_error,Toast.LENGTH_SHORT).show();
@@ -198,8 +189,7 @@ public class ToDoEditActivity extends AppCompatActivity {
                 }
                 return true;
             case R.id.menuDelete:
-                Log.d("hgoehoge",_db.toString());
-                DialogFragment dialog = new DialogFragment(_db);
+                DialogFragment dialog = new DialogFragment(_todoEditViewModel);
                 Bundle extras = new Bundle();
                 extras.putInt("id", (int) _idNo);
                 dialog.setArguments(extras);

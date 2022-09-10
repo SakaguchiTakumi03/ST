@@ -18,9 +18,14 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.InvalidationTracker;
 
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -34,9 +39,9 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import local.hal.st42.android.todo90727.dataaccess.AppDatabase;
 import local.hal.st42.android.todo90727.dataaccess.Tasks;
 import local.hal.st42.android.todo90727.dataaccess.TasksDAO;
+import local.hal.st42.android.todo90727.viewmodel.MainViewModel;
 
 import static local.hal.st42.android.todo90727.Consts.ALL;
 import static local.hal.st42.android.todo90727.Consts.FINISH;
@@ -53,11 +58,17 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int DEFAULT_SELECT = 1;
 
-    private AppDatabase _db;
-
     private String titleName = "";
 
     private RecyclerView _rvToDo;
+
+    private ToDoListAdapter _adapter;
+
+    private MainViewModel _mainViewModel;
+
+    private TasksListObserver _tasksListObserver;
+
+    private LiveData<List<Tasks>> _tasksListLiveData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,13 +84,21 @@ public class MainActivity extends AppCompatActivity {
         toolbarLayout.setExpandedTitleColor(Color.WHITE);
         toolbarLayout.setCollapsedTitleTextColor(Color.LTGRAY);
 
-        _db = AppDatabase.getDatabase(MainActivity.this);
-
         _rvToDo = findViewById(R.id.rvToDo);
         LinearLayoutManager layout = new LinearLayoutManager(MainActivity.this);
         _rvToDo.setLayoutManager(layout);
         DividerItemDecoration decoration = new DividerItemDecoration(MainActivity.this, layout.getOrientation());
         _rvToDo.addItemDecoration(decoration);
+
+        List<Tasks> tasksList = new ArrayList<>();
+        _adapter = new ToDoListAdapter(tasksList);
+        _rvToDo.setAdapter(_adapter);
+
+        ViewModelProvider provider = new ViewModelProvider(MainActivity.this);
+        _mainViewModel = provider.get(MainViewModel.class);
+        _tasksListObserver = new TasksListObserver();
+        _tasksListLiveData = new MutableLiveData<>();
+
         createRecyclerView();
 
         FloatingActionButton fab = findViewById(R.id.fabAdd);
@@ -92,6 +111,23 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    private class TasksListObserver implements Observer<List<Tasks>> {
+        @Override
+        public void onChanged(List<Tasks> tasksList) {
+            _adapter.changeTasksList(tasksList);
+        }
+    }
+
+
+//    private class ToDoViewHolder extends RecyclerView.ViewHolder {
+//        public TextView _tvNameRow;
+//
+//        public ToDoViewHolder(View itemView){
+//            super(itemView);
+//            _tvNameRow = itemView.findViewById(R.id.tvNameRow);
+//        }
+//    }
 
     @Override
     protected void onResume(){
@@ -168,42 +204,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void createRecyclerView() {
-        switch (_menuCategory){
-            case FINISH:
-                createList(FINISH);
-                break;
-            case UNFINISH:
-                createList(UNFINISH);
-                break;
-            default:
-                createList(ALL);
-                break;
-        }
-    }
-
-    private void createList(int state){
-        super.onResume();
-        TasksDAO tasksDAO = _db.createTasksDAO();
-        ListenableFuture<List<Tasks>> future;
-        if(state == 1){
-            future = tasksDAO.findAll();
-        }else if(state == 2){
-            future = tasksDAO.findFinished();
-        }else {
-            future = tasksDAO.findUnFinished();
-        }
-        List<Tasks> tasksList = new ArrayList<>();
-        try {
-            tasksList = future.get();
-        }
-        catch (ExecutionException ex) {
-            Log.e("MainActivity", "データ取得処理失敗", ex);
-        }
-        catch(InterruptedException ex) {
-            Log.e("MainActivity", "データ取得処理失敗", ex);
-        }
-        ToDoListAdapter adapter = new ToDoListAdapter(tasksList);
-        _rvToDo.setAdapter(adapter);
+        _tasksListLiveData.removeObserver(_tasksListObserver);
+        _tasksListLiveData = _mainViewModel.getTodoList(_menuCategory);
+        _tasksListLiveData.observe(MainActivity.this,_tasksListObserver);
     }
 
     private class ToDoViewHolder extends RecyclerView.ViewHolder {
@@ -226,6 +229,11 @@ public class MainActivity extends AppCompatActivity {
             _listData = listData;
         }
 
+        public void changeTasksList(List<Tasks> listData){
+            _listData = listData;
+            notifyDataSetChanged();
+        }
+
         @Override
         public ToDoViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
@@ -244,7 +252,7 @@ public class MainActivity extends AppCompatActivity {
             LinearLayout row = (LinearLayout) holder._cbTaskCheckRow.getParent();
             int rColor = androidx.appcompat.R.drawable.abc_list_selector_holo_light;
 
-            String tempDateStr = toDoEditActivity.dateGetTimeInMillis(item.deadline.getTime(),"yyyy-MM-dd");
+            String tempDateStr = toDoEditActivity.dateGetTimeInMillis(item.deadline.getTime(),"yyyy年MM月dd日");
             String setText = "期限：";
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
             Date date = new Date(System.currentTimeMillis());
@@ -271,10 +279,14 @@ public class MainActivity extends AppCompatActivity {
             }else{
                 Log.d("log_date","after");
                 setText += tempDateStr;
+                holder._tvFixedDateRow.setTextColor(Color.GRAY);
             }
             if(item.done == 1){
                 checked = true;
                 rColor = androidx.appcompat.R.drawable.abc_list_selector_disabled_holo_dark;
+//                setText = "期限："+ tempDateStr;
+                setText = "タスク完了";
+                holder._tvFixedDateRow.setTextColor(Color.BLACK);
             }else{
                 checked = false;
                 rColor = androidx.appcompat.R.drawable.abc_list_selector_holo_light;
@@ -298,7 +310,6 @@ public class MainActivity extends AppCompatActivity {
     private class OnCheckBoxClickListener implements View.OnClickListener {
         @Override
         public void onClick(View view) {
-            TasksDAO tasksDAO = _db.createTasksDAO();
             CheckBox cbTaskCheck = (CheckBox) view;
             int isChecked = -1;
             if(cbTaskCheck.isChecked()){
@@ -308,14 +319,11 @@ public class MainActivity extends AppCompatActivity {
             }
             int id = (int) cbTaskCheck.getTag();
             long result = 0;
-            try{
-                ListenableFuture<Integer> future = tasksDAO.changeTaskChecked(id,isChecked);
-                result = future.get();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
+
+            ViewModelProvider provider = new ViewModelProvider(MainActivity.this);
+            _mainViewModel = provider.get(MainViewModel.class);
+            result = _mainViewModel.checkedDone(id,isChecked);
+
             if(result <= 0){
                 Toast.makeText(MainActivity.this , R.string.msg_save_error, Toast.LENGTH_SHORT).show();
             }
