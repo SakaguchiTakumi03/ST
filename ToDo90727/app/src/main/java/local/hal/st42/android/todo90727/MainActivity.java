@@ -252,7 +252,7 @@ public class MainActivity extends AppCompatActivity {
             LinearLayout row = (LinearLayout) holder._cbTaskCheckRow.getParent();
             int rColor = androidx.appcompat.R.drawable.abc_list_selector_holo_light;
 
-            String tempDateStr = toDoEditActivity.dateGetTimeInMillis(item.deadline.getTime(),"yyyy-MM-dd");
+            String tempDateStr = toDoEditActivity.dateGetTimeInMillis(item.deadline.getTime(),"yyyy年MM月dd日");
             String setText = "期限：";
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
             Date date = new Date(System.currentTimeMillis());
