@@ -4,18 +4,11 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.google.common.util.concurrent.ListenableFuture;
-
-import java.util.concurrent.ExecutionException;
-
-import local.hal.st42.android.todo90727.dataaccess.AppDatabase;
 import local.hal.st42.android.todo90727.dataaccess.Tasks;
-import local.hal.st42.android.todo90727.dataaccess.TasksDAO;
 import local.hal.st42.android.todo90727.viewmodel.ToDoEditViewModel;
 
 import static local.hal.st42.android.todo90727.Consts.MODE_INSERT;
@@ -25,9 +18,6 @@ public class DialogFragment extends androidx.fragment.app.DialogFragment {
     private int _mode = MODE_INSERT;
 
     private long _idNo = 0;
-
-//    private DatabaseHelper _helper;
-//    private AppDatabase _db;
 
     private ToDoEditViewModel _todoEditViewModel;
 
@@ -54,7 +44,6 @@ public class DialogFragment extends androidx.fragment.app.DialogFragment {
             Activity parent = getActivity();
 
             String msg = "";
-
 
             if(which == DialogInterface.BUTTON_POSITIVE){
                 msg = getString(R.string.dlg_full_toast_ok);
