@@ -21,20 +21,15 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.google.common.util.concurrent.ListenableFuture;
-
+import java.sql.Date;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
-import java.sql.Date;
-import java.util.concurrent.ExecutionException;
 
-import local.hal.st42.android.todo90727.dataaccess.AppDatabase;
 import local.hal.st42.android.todo90727.dataaccess.Tasks;
-import local.hal.st42.android.todo90727.dataaccess.TasksDAO;
 import local.hal.st42.android.todo90727.viewmodel.ToDoEditViewModel;
 
 import static local.hal.st42.android.todo90727.Consts.MODE_INSERT;
@@ -45,8 +40,6 @@ public class ToDoEditActivity extends AppCompatActivity {
 
     //エミュレータの時刻をデフォルト値とする
     private long longTimeInMillis = System.currentTimeMillis();
-
-//    private AppDatabase _db;
 
     private ToDoEditViewModel _todoEditViewModel;
 
@@ -63,8 +56,6 @@ public class ToDoEditActivity extends AppCompatActivity {
 
         ViewModelProvider provider = new ViewModelProvider(ToDoEditActivity.this);
         _todoEditViewModel = provider.get(ToDoEditViewModel.class);
-
-//        _db = AppDatabase.getDatabase(ToDoEditActivity.this);
 
         Intent intent = getIntent();
         _mode = intent.getIntExtra("mode",MODE_INSERT);
@@ -118,11 +109,6 @@ public class ToDoEditActivity extends AppCompatActivity {
                 sButton.setChecked(false);
             }
         }
-    }
-
-    @Override
-    protected void onDestroy(){
-        super.onDestroy();
     }
 
     @Override

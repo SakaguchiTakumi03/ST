@@ -25,22 +25,18 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.room.InvalidationTracker;
 
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.common.util.concurrent.ListenableFuture;
 
 import java.text.ParseException;
-import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import local.hal.st42.android.todo90727.dataaccess.Tasks;
-import local.hal.st42.android.todo90727.dataaccess.TasksDAO;
 import local.hal.st42.android.todo90727.viewmodel.MainViewModel;
 
 import static local.hal.st42.android.todo90727.Consts.ALL;
@@ -117,22 +113,6 @@ public class MainActivity extends AppCompatActivity {
         public void onChanged(List<Tasks> tasksList) {
             _adapter.changeTasksList(tasksList);
         }
-    }
-
-
-//    private class ToDoViewHolder extends RecyclerView.ViewHolder {
-//        public TextView _tvNameRow;
-//
-//        public ToDoViewHolder(View itemView){
-//            super(itemView);
-//            _tvNameRow = itemView.findViewById(R.id.tvNameRow);
-//        }
-//    }
-
-    @Override
-    protected void onResume(){
-        super.onResume();
-        createRecyclerView();
     }
 
     private class ListItemClickListener implements View.OnClickListener {
@@ -327,7 +307,6 @@ public class MainActivity extends AppCompatActivity {
             if(result <= 0){
                 Toast.makeText(MainActivity.this , R.string.msg_save_error, Toast.LENGTH_SHORT).show();
             }
-            onResume();
         }
     }
 }

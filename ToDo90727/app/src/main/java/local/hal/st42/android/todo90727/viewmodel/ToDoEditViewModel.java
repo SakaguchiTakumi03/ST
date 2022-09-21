@@ -78,7 +78,4 @@ public class ToDoEditViewModel extends AndroidViewModel {
         }
         return result;
     }
-
-//    public int changeTaskChecked()
-
 }
