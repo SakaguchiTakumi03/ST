@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
-        android:text="hogehoge"
+        android:text="タイトル名"
         app:layout_constraintBottom_toBottomOf="@+id/etInputTask"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvTitleEdit" />
@@ -84,7 +84,7 @@
         android:layout_height="18dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="hogehoge"
+        android:text="日時："
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/etInputTask" />
 

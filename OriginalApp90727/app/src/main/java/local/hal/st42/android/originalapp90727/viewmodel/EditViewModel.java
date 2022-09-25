@@ -9,9 +9,9 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.concurrent.ExecutionException;
 
-import local.hal.st42.android.todo90727.dataaccess.AppDatabase;
-import local.hal.st42.android.todo90727.dataaccess.Tasks;
-import local.hal.st42.android.todo90727.dataaccess.TasksDAO;
+import local.hal.st42.android.originalapp90727.dataaccess.AppDatabase;
+import local.hal.st42.android.originalapp90727.dataaccess.Tasks;
+import local.hal.st42.android.originalapp90727.dataaccess.TasksDAO;
 
 public class EditViewModel extends AndroidViewModel {
     private AppDatabase _db;

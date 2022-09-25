@@ -11,9 +11,9 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import local.hal.st42.android.todo90727.dataaccess.AppDatabase;
-import local.hal.st42.android.todo90727.dataaccess.Tasks;
-import local.hal.st42.android.todo90727.dataaccess.TasksDAO;
+import local.hal.st42.android.originalapp90727.dataaccess.AppDatabase;
+import local.hal.st42.android.originalapp90727.dataaccess.Tasks;
+import local.hal.st42.android.originalapp90727.dataaccess.TasksDAO;
 
 public class MainViewModel extends AndroidViewModel {
     private AppDatabase _db;
@@ -47,9 +47,9 @@ public class MainViewModel extends AndroidViewModel {
         try {
             result = future.get();
         } catch (ExecutionException e) {
-            Log.e("ToDoEditViewModel","データ処理失敗");
+            Log.e("EditViewModel","データ処理失敗");
         } catch (InterruptedException e) {
-            Log.e("ToDoEditViewModel","データ処理失敗");
+            Log.e("EditViewModel","データ処理失敗");
         }
         return result;
     }
