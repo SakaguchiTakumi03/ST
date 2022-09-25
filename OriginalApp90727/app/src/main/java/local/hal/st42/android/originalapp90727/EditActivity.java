@@ -22,7 +22,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
-import local.hal.st42.android.originalapp90727.dataaccess.Tasks;
+import local.hal.st42.android.originalapp90727.dataaccess.Books;
 import local.hal.st42.android.originalapp90727.viewmodel.EditViewModel;
 
 import static local.hal.st42.android.originalapp90727.Consts.*;
@@ -67,40 +67,40 @@ public class EditActivity extends AppCompatActivity {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年MM月[dd日");
         strNowDate = nowDate.format(formatter);
 
-        TextView tvDate = findViewById(R.id.tvDate);
-        tvDate.setText(strNowDate);
+//        TextView tvDate = findViewById(R.id.tvDate);
+//        tvDate.setText(strNowDate);
+//
+//        TextView tvNote = findViewById(R.id.tvInputContent);
+//        tvNote.setText(R.string.tv_input_note);
 
-        TextView tvNote = findViewById(R.id.tvInputContent);
-        tvNote.setText(R.string.tv_input_note);
-
-        Button button = findViewById(R.id.switchButton);
-        button.setText(R.string.switch_button_text);
+//        Button button = findViewById(R.id.switchButton);
+//        button.setText(R.string.switch_button_text);
 
         if(_mode == MODE_INSERT){
 //            insertの処理
-            button.setEnabled(false);
+//            button.setEnabled(false);
         }else{
 //            editの処理
             _idNo = intent.getLongExtra("idNo",0);
 
-            Tasks tasks = _editViewModel.getTasks((int) _idNo);
+//            Books books = _editViewModel.getTasks((int) _idNo);
 
             EditText etInputText = findViewById(R.id.etInputTask);
-            etInputText.setText(tasks.name);
+//            etInputText.setText(tasks.name);
 
-            EditText etInputNote = findViewById(R.id.etInputNote);
-            etInputNote.setText(tasks.note);
+//            EditText etInputNote = findViewById(R.id.etInputNote);
+//            etInputNote.setText(tasks.note);
+//
+//            tvDate = findViewById(R.id.tvDate);
+//            tvDate.setText(dateGetTimeInMillis(tasks.deadline.getTime(),"yyyy年MM月[dd日"));
+//            longTimeInMillis = tasks.deadline.getTime();
 
-            tvDate = findViewById(R.id.tvDate);
-            tvDate.setText(dateGetTimeInMillis(tasks.deadline.getTime(),"yyyy年MM月[dd日"));
-            longTimeInMillis = tasks.deadline.getTime();
-
-            Switch sButton = findViewById(R.id.switchButton);
-            if(tasks.done == 1){
-                sButton.setChecked(true);
-            }else{
-                sButton.setChecked(false);
-            }
+//            Switch sButton = findViewById(R.id.switchButton);
+//            if(tasks.done == 1){
+//                sButton.setChecked(true);
+//            }else{
+//                sButton.setChecked(false);
+//            }
         }
     }
 

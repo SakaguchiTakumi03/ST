@@ -10,8 +10,8 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.ExecutionException;
 
 import local.hal.st42.android.originalapp90727.dataaccess.AppDatabase;
-import local.hal.st42.android.originalapp90727.dataaccess.Tasks;
-import local.hal.st42.android.originalapp90727.dataaccess.TasksDAO;
+import local.hal.st42.android.originalapp90727.dataaccess.Books;
+import local.hal.st42.android.originalapp90727.dataaccess.BooksDAO;
 
 public class EditViewModel extends AndroidViewModel {
     private AppDatabase _db;
@@ -21,23 +21,23 @@ public class EditViewModel extends AndroidViewModel {
         _db = AppDatabase.getDatabase(application);
     }
 
-    public Tasks getTasks(int id){
-        TasksDAO tasksDAO = _db.createTasksDAO();
-        ListenableFuture<Tasks> future = tasksDAO.findByPK(id);
-        Tasks tasks = new Tasks();
+    public Books getTasks(int id){
+        BooksDAO booksDAO = _db.createTasksDAO();
+        ListenableFuture<Books> future = BooksDAO.findByPK(id);
+        Books books = new Books();
         try {
-            tasks = future.get();
+            books = future.get();
         } catch (ExecutionException ex) {
             Log.e("ToDoEditViewModel","データ取得処理失敗");
         } catch (InterruptedException ex) {
             Log.e("ToDoEditViewModel","データ取得処理失敗");
         }
-        return tasks;
+        return books;
     }
 
-    public long insert(Tasks tasks){
-        TasksDAO tasksDAO = _db.createTasksDAO();
-        ListenableFuture<Long> future = tasksDAO.insert(tasks);
+    public long insert(Books tasks){
+        BooksDAO booksDAO = _db.createTasksDAO();
+        ListenableFuture<Long> future = booksDAO.insert(tasks);
         long result = 0;
         try {
             result = future.get();
@@ -49,9 +49,9 @@ public class EditViewModel extends AndroidViewModel {
         return result;
     }
 
-    public int update(Tasks tasks){
-        TasksDAO tasksDAO = _db.createTasksDAO();
-        ListenableFuture<Integer> future = tasksDAO.update(tasks);
+    public int update(Books tasks){
+        BooksDAO booksDAO = _db.createTasksDAO();
+        ListenableFuture<Integer> future = booksDAO.update(tasks);
         int result = 0;
         try {
             result = future.get();
@@ -64,10 +64,10 @@ public class EditViewModel extends AndroidViewModel {
     }
 
     public int delete(int id){
-        Tasks tasks = new Tasks();
+        Books tasks = new Books();
         tasks.id = id;
-        TasksDAO tasksDAO = _db.createTasksDAO();
-        ListenableFuture<Integer> future = tasksDAO.delete(tasks);
+        BooksDAO booksDAO = _db.createTasksDAO();
+        ListenableFuture<Integer> future = booksDAO.delete(tasks);
         int result = 0;
         try {
             result = future.get();

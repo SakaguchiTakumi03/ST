@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import local.hal.st42.android.originalapp90727.dataaccess.AppDatabase;
-import local.hal.st42.android.originalapp90727.dataaccess.Tasks;
-import local.hal.st42.android.originalapp90727.dataaccess.TasksDAO;
+import local.hal.st42.android.originalapp90727.dataaccess.Books;
+import local.hal.st42.android.originalapp90727.dataaccess.BooksDAO;
 
 public class MainViewModel extends AndroidViewModel {
     private AppDatabase _db;
@@ -23,26 +23,26 @@ public class MainViewModel extends AndroidViewModel {
         _db = AppDatabase.getDatabase(application);
     }
 
-    public LiveData<List<Tasks>> getTodoList(int selectMenuCategory){
-        TasksDAO tasksDAO = _db.createTasksDAO();
-
-        LiveData<List<Tasks>> tasksList;
-
-        if(selectMenuCategory == 1){
-            tasksList = tasksDAO.findAll();
-
-        }else if(selectMenuCategory == 2){
-            tasksList = tasksDAO.findFinished();
-
-        }else{
-            tasksList = tasksDAO.findUnFinished();
-        }
-        return tasksList;
-    }
+//    public LiveData<List<Books>> getTodoList(int selectMenuCategory){
+//        TasksDAO tasksDAO = _db.createTasksDAO();
+//
+//        LiveData<List<Books>> tasksList;
+//
+//        if(selectMenuCategory == 1){
+////            tasksList = tasksDAO.findAll();
+//
+//        }else if(selectMenuCategory == 2){
+////            tasksList = tasksDAO.findFinished();
+//
+//        }else{
+////            tasksList = tasksDAO.findUnFinished();
+//        }
+////        return tasksList;
+//    }
 
     public int checkedDone(int id , int done){
-        TasksDAO tasksDAO = _db.createTasksDAO();
-        ListenableFuture<Integer> future = tasksDAO.changeTaskChecked(id, done);
+        BooksDAO booksDAO = _db.createTasksDAO();
+        ListenableFuture<Integer> future = booksDAO.changeTaskChecked(id, done);
         int result = 0;
         try {
             result = future.get();

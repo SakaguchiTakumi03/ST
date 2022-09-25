@@ -5,22 +5,28 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-import java.sql.Date;
+import java.util.Date;
 
 @Entity
-public class Tasks {
+public class Books {
     @PrimaryKey(autoGenerate = true)
     public int id;
 
     @NonNull
-    public String name;
+    public String title;
 
-    public Date deadline;
+//    @NonNull
+    public String artist;
+
+    public String note;
 
     @NonNull
     @ColumnInfo(defaultValue = "0")
     public int done;
 
-    public String note;
+    public String purchaseDate;
 
+    public String registrationDate;
+
+    public String updateDate;
 }

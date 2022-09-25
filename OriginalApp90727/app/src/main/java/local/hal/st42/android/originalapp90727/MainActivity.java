@@ -24,7 +24,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.List;
 
-import local.hal.st42.android.originalapp90727.dataaccess.Tasks;
+import local.hal.st42.android.originalapp90727.dataaccess.Books;
 import local.hal.st42.android.originalapp90727.viewmodel.MainViewModel;
 
 import static local.hal.st42.android.originalapp90727.Consts.*;
@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
 
 //    private TasksListObserver _tasksListObserver;
 
-    private LiveData<List<Tasks>> _tasksListLiveData;
+    private LiveData<List<Books>> _tasksListLiveData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
         DividerItemDecoration decoration = new DividerItemDecoration(MainActivity.this, layout.getOrientation());
         _rvOriginApp.addItemDecoration(decoration);
 
-        List<Tasks> tasksList = new ArrayList<>();
+        List<Books> tasksList = new ArrayList<>();
 //        _adapter = new OriginalAppListAdapter(tasksList);
 //        _rvOriginApp.setAdapter(_adapter);
 
