@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="hogehoge"
+        android:text="蔵書登録"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -79,16 +79,18 @@
         android:id="@+id/tvInputTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         android:text="タイトル名"
-        app:layout_constraintBottom_toBottomOf="@+id/etInputTask"
+        app:layout_constraintBottom_toBottomOf="@+id/etInputTitle"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/etInputTask"
+        app:layout_constraintTop_toTopOf="@+id/etInputTitle"
         app:layout_constraintVertical_bias="0.558" />
 
     <EditText
-        android:id="@+id/etInputTask"
+        android:id="@+id/etInputTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
         android:ems="10"
@@ -112,6 +114,7 @@
         android:id="@+id/etInputArtist"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
         android:ems="10"
@@ -119,7 +122,22 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/tvInputTitle"
-        app:layout_constraintTop_toBottomOf="@+id/etInputTask" />
+        app:layout_constraintTop_toBottomOf="@+id/etInputTitle" />
+
+    <EditText
+        android:id="@+id/etInputNote"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvEditNote" />
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbarToDoEdit"
@@ -132,5 +150,46 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:popupTheme="@style/Theme.ToolbarSample.PopupOverlay" />
+
+    <TextView
+        android:id="@+id/tvPurchaseDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="購入日："
+        app:layout_constraintBottom_toBottomOf="@+id/tvClickDate"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tvClickDate"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/tvClickDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:text="1900年01月01日"
+        app:layout_constraintStart_toEndOf="@+id/tvPurchaseDate"
+        app:layout_constraintTop_toBottomOf="@+id/etInputArtist" />
+
+    <Switch
+        android:id="@+id/switchBookmark"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="ブックマーク："
+        app:layout_constraintBottom_toBottomOf="@+id/tvPurchaseDate"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tvPurchaseDate" />
+
+    <TextView
+        android:id="@+id/tvEditNote"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:text="コメント："
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvClickDate" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

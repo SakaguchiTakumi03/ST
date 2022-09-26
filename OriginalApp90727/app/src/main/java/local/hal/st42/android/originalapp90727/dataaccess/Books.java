@@ -23,7 +23,7 @@ public class Books {
 
     @NonNull
     @ColumnInfo(defaultValue = "0")
-    public int bookMark;
+    public int bookmark;
 
     public Date purchaseDate;
 

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Switch;
@@ -16,13 +17,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProvider;
 
-import java.time.Instant;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.zip.DataFormatException;
 
 import local.hal.st42.android.originalapp90727.dataaccess.Books;
+import local.hal.st42.android.originalapp90727.util.ConvertList;
 import local.hal.st42.android.originalapp90727.viewmodel.EditViewModel;
 
 import static local.hal.st42.android.originalapp90727.Consts.*;
@@ -37,12 +39,12 @@ public class EditActivity extends AppCompatActivity {
 
     private String strNowDate;
 
-    private String dateGetTimeInMillis(long longTimeInMillis, String format){
-        DateTimeFormatter dtFormat = DateTimeFormatter.ofPattern(format);
-        ZonedDateTime zoneDate = Instant.ofEpochMilli(longTimeInMillis).atZone(ZoneId.systemDefault());
-        String strDate = zoneDate.format(dtFormat);
-        return strDate;
-    }
+//    private String dateGetTimeInMillis(long longTimeInMillis, String format){
+//        DateTimeFormatter dtFormat = DateTimeFormatter.ofPattern(format);
+//        ZonedDateTime zoneDate = Instant.ofEpochMilli(longTimeInMillis).atZone(ZoneId.systemDefault());
+//        String strDate = zoneDate.format(dtFormat);
+//        return strDate;
+//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,34 +75,39 @@ public class EditActivity extends AppCompatActivity {
 //        TextView tvNote = findViewById(R.id.tvInputContent);
 //        tvNote.setText(R.string.tv_input_note);
 
-//        Button button = findViewById(R.id.switchButton);
-//        button.setText(R.string.switch_button_text);
+        Button sBookmark = findViewById(R.id.switchBookmark);
+        sBookmark.setText(R.string.switch_button_text);
+
+        ConvertList cList = new ConvertList();
 
         if(_mode == MODE_INSERT){
 //            insertの処理
-//            button.setEnabled(false);
+            sBookmark.setEnabled(false);
         }else{
 //            editの処理
             _idNo = intent.getLongExtra("idNo",0);
 
-//            Books books = _editViewModel.getTasks((int) _idNo);
+            Books books = _editViewModel.getBooks((int) _idNo);
 
-            EditText etInputText = findViewById(R.id.etInputTask);
-//            etInputText.setText(tasks.name);
+            EditText etInputTitle = findViewById(R.id.etInputTitle);
+            etInputTitle.setText(books.title);
 
-//            EditText etInputNote = findViewById(R.id.etInputNote);
-//            etInputNote.setText(tasks.note);
-//
-//            tvDate = findViewById(R.id.tvDate);
-//            tvDate.setText(dateGetTimeInMillis(tasks.deadline.getTime(),"yyyy年MM月[dd日"));
-//            longTimeInMillis = tasks.deadline.getTime();
+            EditText etInputArtist = findViewById(R.id.etInputArtist);
+            etInputArtist.setText(books.artist);
 
-//            Switch sButton = findViewById(R.id.switchButton);
-//            if(tasks.done == 1){
-//                sButton.setChecked(true);
-//            }else{
-//                sButton.setChecked(false);
-//            }
+            EditText etInputNote = findViewById(R.id.etInputNote);
+            etInputNote.setText(books.note);
+
+            TextView tvClickDate = findViewById(R.id.tvClickDate);
+            tvClickDate.setText(cList.DateToString(books.purchaseDate));
+
+            sBookmark.setEnabled(true);
+            Switch bookmark = findViewById(R.id.switchBookmark);
+            if(books.bookmark == 1){
+                bookmark.setChecked(true);
+            }else{
+                bookmark.setChecked(false);
+            }
         }
     }
 
@@ -122,12 +129,16 @@ public class EditActivity extends AppCompatActivity {
                 finish();
                 return true;
             case R.id.menuSave:
-                EditText etInput = findViewById(R.id.etInputTask);
+                EditText etInput = findViewById(R.id.etInputTitle);
                 String input = etInput.getText().toString();
                 if(input.equals("")){
                     Toast.makeText(EditActivity.this,"", Toast.LENGTH_SHORT).show();
                 }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void tvClickDate(View view){
+        TextView tvClickDate = findViewById(R.id.tvClickDate);
     }
 }
