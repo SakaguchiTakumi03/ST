@@ -7,8 +7,11 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 
+import com.google.common.base.Converter;
+
 @Database(entities = {Books.class}, version = 1 , exportSchema = false)
-@TypeConverters({DateConverter.class})
+//@TypeConverters({DateConverter.class})
+@TypeConverters({Converters.class})
 public abstract class AppDatabase extends RoomDatabase {
     private static AppDatabase _instance;
 
@@ -19,6 +22,6 @@ public abstract class AppDatabase extends RoomDatabase {
         return _instance;
     }
 
-    public abstract BooksDAO createTasksDAO();
+    public abstract BooksDAO createBooksDAO();
 
 }

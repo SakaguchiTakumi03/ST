@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import androidx.room.TypeConverter;
 
 import java.util.Date;
 
@@ -22,11 +23,11 @@ public class Books {
 
     @NonNull
     @ColumnInfo(defaultValue = "0")
-    public int done;
+    public int bookMark;
 
-    public String purchaseDate;
+    public Date purchaseDate;
 
-    public String registrationDate;
+    public Date registrationDate;
 
-    public String updateDate;
+    public Date updateDate;
 }

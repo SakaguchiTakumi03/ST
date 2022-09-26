@@ -33,8 +33,8 @@ public interface BooksDAO {
     @Update
     ListenableFuture<Integer> update(Books tasks);
 
-    @Query("UPDATE books SET done = :done WHERE id = :id")
-    ListenableFuture<Integer> changeTaskChecked(int id,int done);
+    @Query("UPDATE books SET bookMark = :bookMark WHERE id = :id")
+    ListenableFuture<Integer> changeTaskChecked(int id,int bookMark);
 
     @Delete
     ListenableFuture<Integer> delete(Books tasks);

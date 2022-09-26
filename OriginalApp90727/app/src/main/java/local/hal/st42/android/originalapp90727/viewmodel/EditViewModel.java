@@ -21,8 +21,8 @@ public class EditViewModel extends AndroidViewModel {
         _db = AppDatabase.getDatabase(application);
     }
 
-    public Books getTasks(int id){
-        BooksDAO booksDAO = _db.createTasksDAO();
+    public Books getBooks(int id){
+        BooksDAO booksDAO = _db.createBooksDAO();
         ListenableFuture<Books> future = BooksDAO.findByPK(id);
         Books books = new Books();
         try {
@@ -36,7 +36,7 @@ public class EditViewModel extends AndroidViewModel {
     }
 
     public long insert(Books tasks){
-        BooksDAO booksDAO = _db.createTasksDAO();
+        BooksDAO booksDAO = _db.createBooksDAO();
         ListenableFuture<Long> future = booksDAO.insert(tasks);
         long result = 0;
         try {
@@ -50,7 +50,7 @@ public class EditViewModel extends AndroidViewModel {
     }
 
     public int update(Books tasks){
-        BooksDAO booksDAO = _db.createTasksDAO();
+        BooksDAO booksDAO = _db.createBooksDAO();
         ListenableFuture<Integer> future = booksDAO.update(tasks);
         int result = 0;
         try {
@@ -66,7 +66,7 @@ public class EditViewModel extends AndroidViewModel {
     public int delete(int id){
         Books tasks = new Books();
         tasks.id = id;
-        BooksDAO booksDAO = _db.createTasksDAO();
+        BooksDAO booksDAO = _db.createBooksDAO();
         ListenableFuture<Integer> future = booksDAO.delete(tasks);
         int result = 0;
         try {

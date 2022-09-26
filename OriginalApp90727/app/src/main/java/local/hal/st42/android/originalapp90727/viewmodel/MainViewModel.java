@@ -41,7 +41,7 @@ public class MainViewModel extends AndroidViewModel {
 //    }
 
     public int checkedDone(int id , int done){
-        BooksDAO booksDAO = _db.createTasksDAO();
+        BooksDAO booksDAO = _db.createBooksDAO();
         ListenableFuture<Integer> future = booksDAO.changeTaskChecked(id, done);
         int result = 0;
         try {
