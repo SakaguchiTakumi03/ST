@@ -168,6 +168,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
+        android:onClick="tvClickDate"
         android:text="1900年01月01日"
         app:layout_constraintStart_toEndOf="@+id/tvPurchaseDate"
         app:layout_constraintTop_toBottomOf="@+id/etInputArtist" />

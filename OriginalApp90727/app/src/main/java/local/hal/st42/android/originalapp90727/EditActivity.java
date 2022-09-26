@@ -1,12 +1,15 @@
 package local.hal.st42.android.originalapp90727;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -18,7 +21,10 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.zip.DataFormatException;
@@ -66,11 +72,11 @@ public class EditActivity extends AppCompatActivity {
         tvTitleEdit.setText(R.string.tv_title_edit);
 
         LocalDateTime nowDate = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年MM月[dd日");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日");
         strNowDate = nowDate.format(formatter);
 
-//        TextView tvDate = findViewById(R.id.tvDate);
-//        tvDate.setText(strNowDate);
+        TextView tvClickDate = findViewById(R.id.tvClickDate);
+        tvClickDate.setText(strNowDate);
 //
 //        TextView tvNote = findViewById(R.id.tvInputContent);
 //        tvNote.setText(R.string.tv_input_note);
@@ -98,7 +104,6 @@ public class EditActivity extends AppCompatActivity {
             EditText etInputNote = findViewById(R.id.etInputNote);
             etInputNote.setText(books.note);
 
-            TextView tvClickDate = findViewById(R.id.tvClickDate);
             tvClickDate.setText(cList.DateToString(books.purchaseDate));
 
             sBookmark.setEnabled(true);
@@ -138,7 +143,37 @@ public class EditActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void tvClickDate(View view){
-        TextView tvClickDate = findViewById(R.id.tvClickDate);
+    //tvDateのonClickメソッド
+    public void tvClickDate(View view) {
+        TextView tvDate = findViewById(R.id.tvClickDate);
+        String strDate = tvDate.getText().toString();
+        strDate = strDate.replace("年","");
+        strDate = strDate.replace("月","");
+        strDate = strDate.replace("日","");
+
+        int year =  Integer.parseInt(strDate.substring(0,4));
+        int month  = Integer.parseInt(strDate.substring(4,6)) -1;
+        int dayOfMonth = Integer.parseInt(strDate.substring(6,8));
+
+        DatePickerDialog dateDialog = new DatePickerDialog(EditActivity.this, new DatePickerDialogDateSetListener(), year, month, dayOfMonth);
+        dateDialog.show();
     }
+
+    private class DatePickerDialogDateSetListener implements DatePickerDialog.OnDateSetListener{
+        @Override
+//        後で変更。
+        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+            DateTimeFormatter parseFormatter = DateTimeFormatter.ofPattern("yyyy年[]M月[]d日 HH:mm:ss").withZone(ZoneId.systemDefault());
+            ZonedDateTime dt = ZonedDateTime.parse(year+"年"+(month+1)+"月"+dayOfMonth+"日 23:23:23", parseFormatter);
+
+            Instant instant = dt.toInstant();
+            Date date = Date.from(instant);
+
+            //Viewに表示する処理
+            TextView tvClickDate = findViewById(R.id.tvClickDate);
+            ConvertList cList = new ConvertList();
+            tvClickDate.setText(cList.DateToString(date));
+        }
+    }
+
 }
