@@ -78,7 +78,7 @@ public class EditActivity extends AppCompatActivity {
 
         if(_mode == MODE_INSERT){
 //            insertの処理
-            sBookmark.setEnabled(false);
+            sBookmark.setEnabled(true);
         }else{
 //            editの処理
             _idNo = intent.getLongExtra("idNo",0);
@@ -146,9 +146,6 @@ public class EditActivity extends AppCompatActivity {
                     }else{
                         books.bookmark = 0;
                     }
-                    TextView tvClickDate = findViewById(R.id.tvClickDate);
-                    String tempStrDate = tvClickDate.getText().toString();
-                    SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     long result = 0;
                     books.purchaseDate = cList.longToDate(longTimeInMillis);
                     books.registrationDate = new Date();

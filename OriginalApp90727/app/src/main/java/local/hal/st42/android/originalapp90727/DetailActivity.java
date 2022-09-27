@@ -11,10 +11,14 @@ import android.widget.TextView;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.room.InvalidationTracker;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
 
 import local.hal.st42.android.originalapp90727.dataaccess.Books;
 import local.hal.st42.android.originalapp90727.util.ConvertList;
@@ -28,6 +32,7 @@ public class DetailActivity extends AppCompatActivity {
     private  long _idNo = 0;
     private String titleName = "";
     private DetailViewModel _detailViewModel;
+    private LiveData<Books> _liveData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -40,37 +45,14 @@ public class DetailActivity extends AppCompatActivity {
 
         ViewModelProvider provider = new ViewModelProvider(DetailActivity.this);
         _detailViewModel = provider.get(DetailViewModel.class);
-        Books books = _detailViewModel.getBooks((int) _idNo);
-        _idNo = books.id;
-        ConvertList cList = new ConvertList();
+
+        _liveData = _detailViewModel.getBooks((int) _idNo);
+
+        DetailObserver observer = new DetailObserver();
+        _liveData.observe(DetailActivity.this,observer);
 
         TextView tvDetailTitle = findViewById(R.id.tvDetailTitle);
         tvDetailTitle.setText(R.string.tv_detail_title);
-        //DBから取得のコーナー
-        TextView tvDetailId = findViewById(R.id.tvIdValue);
-        tvDetailId.setText(Integer.toString(books.id));
-        TextView tvTitle = findViewById(R.id.tvDetailTitleValue);
-        tvTitle.setText(books.title);
-        TextView tvArtist = findViewById(R.id.tvArtistValue);
-        tvArtist.setText(books.artist);
-        TextView tvBookmark = findViewById(R.id.tvDetailBookmarkValue);
-        if(books.bookmark == 1){
-            tvBookmark.setText("ブックマークしてるよ");
-        }else{
-            tvBookmark.setText("ブックマークしてないよ");
-        }
-        TextView tvPurchase = findViewById(R.id.tvDetailPurchaseDateValue);
-        tvPurchase.setText(cList.DateToString(books.purchaseDate,"yyyy年MM月dd日 hh:mm:ss"));
-        TextView tvRegistration = findViewById(R.id.tvDetailRegistrationDateValue);
-        tvRegistration.setText(cList.DateToString(books.registrationDate,"yyyy年MM月dd日 hh:mm:ss"));
-        TextView tvUpdate = findViewById(R.id.tvDetailUpdateDateValue);
-        if(books.updateDate == null){
-            tvUpdate.setText("更新されてないよ");
-        }else{
-            tvUpdate.setText(cList.DateToString(books.updateDate,"yyyy年MM月dd日 hh:mm:ss"));
-        }
-        TextView tvNote = findViewById(R.id.tvDetailNoteValue);
-        tvNote.setText(books.note);
 
         Toolbar toolbar = findViewById(R.id.toolbarDetail);
         setSupportActionBar(toolbar);
@@ -101,4 +83,37 @@ public class DetailActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private class DetailObserver implements Observer<Books>{
+        @Override
+        public void onChanged(Books books){
+            ConvertList cList = new ConvertList();
+
+            //取得のコーナー
+            _idNo = books.id;
+            TextView tvDetailId = findViewById(R.id.tvIdValue);
+            tvDetailId.setText(Integer.toString(books.id));
+            TextView tvTitle = findViewById(R.id.tvDetailTitleValue);
+            tvTitle.setText(books.title);
+            TextView tvArtist = findViewById(R.id.tvArtistValue);
+            tvArtist.setText(books.artist);
+            TextView tvBookmark = findViewById(R.id.tvDetailBookmarkValue);
+            if(books.bookmark == 1){
+                tvBookmark.setText("ブックマークしてるよ");
+            }else{
+                tvBookmark.setText("ブックマークしてないよ");
+            }
+            TextView tvPurchase = findViewById(R.id.tvDetailPurchaseDateValue);
+            tvPurchase.setText(cList.DateToString(books.purchaseDate,"yyyy年MM月dd日 hh:mm:ss"));
+            TextView tvRegistration = findViewById(R.id.tvDetailRegistrationDateValue);
+            tvRegistration.setText(cList.DateToString(books.registrationDate,"yyyy年MM月dd日 hh:mm:ss"));
+            TextView tvUpdate = findViewById(R.id.tvDetailUpdateDateValue);
+            if(books.updateDate == null){
+                tvUpdate.setText("更新されてないよ");
+            }else{
+                tvUpdate.setText(cList.DateToString(books.updateDate,"yyyy年MM月dd日 hh:mm:ss"));
+            }
+            TextView tvNote = findViewById(R.id.tvDetailNoteValue);
+            tvNote.setText(books.note);
+        }
+    }
 }

@@ -31,6 +31,9 @@ public interface BooksDAO {
     @Query("SELECT * FROM books WHERE id = :id")
     ListenableFuture<Books> findByPK(long id);
 
+    @Query("SELECT * FROM books WHERE id = :id")
+    LiveData<Books> findByPKLiveData(long id);
+
     @Insert
     ListenableFuture<Long> insert(Books books);
 

@@ -26,17 +26,8 @@
             android:id="@+id/tvArtistRow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="16sp" />
+            android:textSize="12sp" />
 
 
     </LinearLayout>
-
-<!--    <CheckBox-->
-<!--        android:id="@+id/cbTaskCheckRow"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_gravity="center|right|end"-->
-<!--        android:focusable="false" />-->
-
-
 </LinearLayout>

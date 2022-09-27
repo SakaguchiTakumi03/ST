@@ -134,8 +134,8 @@ public class MainActivity extends AppCompatActivity {
             Books item = _listData.get(position);
 
             holder.itemView.setOnClickListener(new ListItemClickListener(item.id));
-            holder._tvTitleRow.setText(item.title);
-            holder._tvArtistRow.setText(item.artist);
+            holder._tvTitleRow.setText("タイトル："+item.title);
+            holder._tvArtistRow.setText("作者："+item.artist);
         }
 
         @Override
