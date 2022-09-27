@@ -28,7 +28,7 @@ public interface BooksDAO {
     }
 
     @Insert
-    ListenableFuture<Long> insert(Books tasks);
+    ListenableFuture<Long> insert(Books books);
 
     @Update
     ListenableFuture<Integer> update(Books tasks);

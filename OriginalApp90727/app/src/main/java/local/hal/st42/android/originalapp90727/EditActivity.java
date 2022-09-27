@@ -22,6 +22,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -44,13 +45,6 @@ public class EditActivity extends AppCompatActivity {
     private EditViewModel _editViewModel;
 
     private String strNowDate;
-
-//    private String dateGetTimeInMillis(long longTimeInMillis, String format){
-//        DateTimeFormatter dtFormat = DateTimeFormatter.ofPattern(format);
-//        ZonedDateTime zoneDate = Instant.ofEpochMilli(longTimeInMillis).atZone(ZoneId.systemDefault());
-//        String strDate = zoneDate.format(dtFormat);
-//        return strDate;
-//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,9 +71,6 @@ public class EditActivity extends AppCompatActivity {
 
         TextView tvClickDate = findViewById(R.id.tvClickDate);
         tvClickDate.setText(strNowDate);
-//
-//        TextView tvNote = findViewById(R.id.tvInputContent);
-//        tvNote.setText(R.string.tv_input_note);
 
         Button sBookmark = findViewById(R.id.switchBookmark);
         sBookmark.setText(R.string.switch_button_text);
@@ -134,10 +125,46 @@ public class EditActivity extends AppCompatActivity {
                 finish();
                 return true;
             case R.id.menuSave:
-                EditText etInput = findViewById(R.id.etInputTitle);
-                String input = etInput.getText().toString();
-                if(input.equals("")){
+                EditText etInputTitle = findViewById(R.id.etInputTitle);
+                String inputTitle = etInputTitle.getText().toString();
+                EditText etInputArtist = findViewById(R.id.etInputArtist);
+                String inputArtist = etInputArtist.getText().toString();
+                EditText etInputNote = findViewById(R.id.etInputNote);
+                String inputNote = etInputNote.getText().toString();
+                Switch bSwitch = findViewById(R.id.switchBookmark);
+
+                if(inputTitle.equals("")){
                     Toast.makeText(EditActivity.this,"", Toast.LENGTH_SHORT).show();
+                    break;
+                }else{
+                    ConvertList cList = new ConvertList();
+                    Books books = new Books();
+                    books.title = inputTitle;
+                    books.artist = inputArtist;
+                    books.note = inputNote;
+                    if(bSwitch.isChecked() == true){
+                        books.bookmark = 1;
+                    }else{
+                        books.bookmark = 0;
+                    }
+                    TextView tvClickDate = findViewById(R.id.tvClickDate);
+                    books.purchaseDate = cList.StringToDate(tvClickDate.getText().toString());
+                    long result = 0;
+                    if(_mode == MODE_INSERT){
+                        books.registrationDate = cList.StringToDate(strNowDate);
+                        books.updateDate = null;
+                        result = _editViewModel.insert(books);
+                        Log.d("future_tag","_insert");
+                    }else{
+                        books.updateDate = cList.StringToDate(strNowDate);
+                        result = _editViewModel.update(books);
+                    }
+                    if(result <= 0){
+                        Toast.makeText(EditActivity.this, "内容",Toast.LENGTH_SHORT).show();
+                        Log.e("errorLog","insertまたはupdateにてエラー");
+                    }else {
+                        finish();
+                    }
                 }
         }
         return super.onOptionsItemSelected(item);
@@ -152,7 +179,7 @@ public class EditActivity extends AppCompatActivity {
         strDate = strDate.replace("日","");
 
         int year =  Integer.parseInt(strDate.substring(0,4));
-        int month  = Integer.parseInt(strDate.substring(4,6)) -1;
+        int month  = Integer.parseInt(strDate.substring(4,6));
         int dayOfMonth = Integer.parseInt(strDate.substring(6,8));
 
         DatePickerDialog dateDialog = new DatePickerDialog(EditActivity.this, new DatePickerDialogDateSetListener(), year, month, dayOfMonth);
@@ -161,19 +188,13 @@ public class EditActivity extends AppCompatActivity {
 
     private class DatePickerDialogDateSetListener implements DatePickerDialog.OnDateSetListener{
         @Override
-//        後で変更。
         public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-            DateTimeFormatter parseFormatter = DateTimeFormatter.ofPattern("yyyy年[]M月[]d日 HH:mm:ss").withZone(ZoneId.systemDefault());
-            ZonedDateTime dt = ZonedDateTime.parse(year+"年"+(month+1)+"月"+dayOfMonth+"日 23:23:23", parseFormatter);
-
-            Instant instant = dt.toInstant();
-            Date date = Date.from(instant);
+            LocalDate dt = LocalDate.of(year,month,dayOfMonth);
 
             //Viewに表示する処理
             TextView tvClickDate = findViewById(R.id.tvClickDate);
             ConvertList cList = new ConvertList();
-            tvClickDate.setText(cList.DateToString(date));
+            tvClickDate.setText(cList.LocalDateToString(dt));
         }
     }
-
 }

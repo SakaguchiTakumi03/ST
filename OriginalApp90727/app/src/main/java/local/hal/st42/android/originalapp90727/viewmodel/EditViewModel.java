@@ -28,23 +28,23 @@ public class EditViewModel extends AndroidViewModel {
         try {
             books = future.get();
         } catch (ExecutionException ex) {
-            Log.e("ToDoEditViewModel","データ取得処理失敗");
+            Log.e("EditViewModel","データ取得処理失敗");
         } catch (InterruptedException ex) {
-            Log.e("ToDoEditViewModel","データ取得処理失敗");
+            Log.e("EditViewModel","データ取得処理失敗");
         }
         return books;
     }
 
-    public long insert(Books tasks){
+    public long insert(Books books){
         BooksDAO booksDAO = _db.createBooksDAO();
-        ListenableFuture<Long> future = booksDAO.insert(tasks);
+        ListenableFuture<Long> future = booksDAO.insert(books);
         long result = 0;
         try {
             result = future.get();
         } catch (ExecutionException e) {
-            Log.e("ToDoEditViewModel","データ登録処理失敗");
+            Log.e("EditViewModel","データ登録処理失敗");
         } catch (InterruptedException e) {
-            Log.e("ToDoEditViewModel","データ登録処理失敗");
+            Log.e("EditViewModel","データ登録処理失敗");
         }
         return result;
     }
@@ -56,9 +56,9 @@ public class EditViewModel extends AndroidViewModel {
         try {
             result = future.get();
         } catch (ExecutionException e) {
-            Log.e("ToDoEditViewModel","データ更新処理失敗");
+            Log.e("EditViewModel","データ更新処理失敗");
         } catch (InterruptedException e) {
-            Log.e("ToDoEditViewModel","データ更新処理失敗");
+            Log.e("EditViewModel","データ更新処理失敗");
         }
         return result;
     }
@@ -72,9 +72,9 @@ public class EditViewModel extends AndroidViewModel {
         try {
             result = future.get();
         } catch (ExecutionException e) {
-            Log.e("ToDoEditViewModel","データ削除処理失敗");
+            Log.e("EditViewModel","データ削除処理失敗");
         } catch (InterruptedException e) {
-            Log.e("ToDoEditViewModel","データ削除処理失敗");
+            Log.e("EditViewModel","データ削除処理失敗");
         }
         return result;
     }
