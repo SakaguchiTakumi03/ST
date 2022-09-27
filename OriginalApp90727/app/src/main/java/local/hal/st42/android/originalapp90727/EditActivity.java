@@ -18,17 +18,17 @@ import android.widget.Toast;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
-import java.util.zip.DataFormatException;
 
 import local.hal.st42.android.originalapp90727.dataaccess.Books;
 import local.hal.st42.android.originalapp90727.util.ConvertList;
@@ -57,25 +57,24 @@ public class EditActivity extends AppCompatActivity {
         ViewModelProvider provider = new ViewModelProvider(EditActivity.this);
         _editViewModel = provider.get(EditViewModel.class);
 
-        Toolbar toolbar = findViewById(R.id.toolbarToDoEdit);
+        Toolbar toolbar = findViewById(R.id.toolbarEdit);
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
+
+        ConvertList cList = new ConvertList();
+
         TextView tvTitleEdit = findViewById(R.id.tvTitleEdit);
         tvTitleEdit.setText(R.string.tv_title_edit);
 
-        LocalDateTime nowDate = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日");
-        strNowDate = nowDate.format(formatter);
+        strNowDate = cList.DateToString(new Date(),"yyyy年MM月dd日");
 
         TextView tvClickDate = findViewById(R.id.tvClickDate);
         tvClickDate.setText(strNowDate);
 
         Button sBookmark = findViewById(R.id.switchBookmark);
         sBookmark.setText(R.string.switch_button_text);
-
-        ConvertList cList = new ConvertList();
 
         if(_mode == MODE_INSERT){
 //            insertの処理
@@ -148,25 +147,35 @@ public class EditActivity extends AppCompatActivity {
                         books.bookmark = 0;
                     }
                     TextView tvClickDate = findViewById(R.id.tvClickDate);
-                    books.purchaseDate = cList.StringToDate(tvClickDate.getText().toString());
+                    String tempStrDate = tvClickDate.getText().toString();
+                    SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     long result = 0;
+                    books.purchaseDate = cList.longToDate(longTimeInMillis);
+                    books.registrationDate = new Date();
+                    books.updateDate = null;
+
                     if(_mode == MODE_INSERT){
-                        books.registrationDate = cList.StringToDate(strNowDate);
-                        Log.d("insertRegistrationDate",cList.DateToString(books.registrationDate,""));
-                        books.updateDate = null;
                         result = _editViewModel.insert(books);
-                        Log.d("future_tag","_insert");
                     }else{
-                        books.updateDate = cList.StringToDate(strNowDate);
+                        books.id = (int) _idNo;
                         result = _editViewModel.update(books);
                     }
                     if(result <= 0){
-                        Toast.makeText(EditActivity.this, "内容",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(EditActivity.this, "保存出来ませんでした。",Toast.LENGTH_SHORT).show();
                         Log.e("errorLog","insertまたはupdateにてエラー");
                     }else {
                         finish();
                     }
                 }
+                return true;
+            case R.id.menuDelete:
+                DialogFragment dialog = new DialogFragment(_editViewModel);
+                Bundle extras = new Bundle();
+                extras.putInt("id", (int) _idNo);
+                dialog.setArguments(extras);
+                FragmentManager manager = getSupportFragmentManager();
+                dialog.show(manager,"DialogFragment");
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -180,7 +189,7 @@ public class EditActivity extends AppCompatActivity {
         strDate = strDate.replace("日","");
 
         int year =  Integer.parseInt(strDate.substring(0,4));
-        int month  = Integer.parseInt(strDate.substring(4,6));
+        int month  = Integer.parseInt(strDate.substring(4,6)) -1;
         int dayOfMonth = Integer.parseInt(strDate.substring(6,8));
 
         DatePickerDialog dateDialog = new DatePickerDialog(EditActivity.this, new DatePickerDialogDateSetListener(), year, month, dayOfMonth);
@@ -190,12 +199,15 @@ public class EditActivity extends AppCompatActivity {
     private class DatePickerDialogDateSetListener implements DatePickerDialog.OnDateSetListener{
         @Override
         public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-            LocalDate dt = LocalDate.of(year,month,dayOfMonth);
+            DateTimeFormatter parseFormatter = DateTimeFormatter.ofPattern("yyyy年[]M月[]d日 HH:mm:ss").withZone(ZoneId.systemDefault());
+            ZonedDateTime dt = ZonedDateTime.parse(year+"年"+(month+1)+"月"+dayOfMonth+"日 23:23:23", parseFormatter);
+            longTimeInMillis = dt.toInstant().toEpochMilli();
+            Log.i("millis",Long.toString(longTimeInMillis));
 
             //Viewに表示する処理
-            TextView tvClickDate = findViewById(R.id.tvClickDate);
             ConvertList cList = new ConvertList();
-            tvClickDate.setText(cList.LocalDateToString(dt));
+            TextView tvClickDate = findViewById(R.id.tvClickDate);
+            tvClickDate.setText(cList.longToString(longTimeInMillis,"yyyy年MM月dd日"));
         }
     }
 }

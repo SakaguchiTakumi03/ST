@@ -161,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View view){
             Intent intent = new Intent(MainActivity.this,DetailActivity.class);
-//            intent.putExtra("mode",MODE_DETAIL);
+            intent.putExtra("mode",MODE_DETAIL);
             intent.putExtra("idNo",_id);
 
             startActivity(intent);

@@ -6,6 +6,7 @@
     <string name="tv_input_title">蔵書名</string>
     <string name="tv_calender_info">期限：</string>
     <string name="tv_input_note">詳細：</string>
+    <string name="tv_detail_title">詳細情報</string>
     <string name="tv_date"></string>
 <!--    メニュー-->
     <string name="menu_title">タイトル</string>
@@ -13,5 +14,13 @@
     <string name="menu_bookmark">ブックマーク</string>
     <string name="menu_asc">昇順</string>
     <string name="menu_desc">降順</string>
-    <string name="switch_button_text">タスク完了：</string>
+    <string name="switch_button_text">ブックマーク：</string>
+<!--    ダイアログ-->
+    <string name="dlg_full_msg">削除してもよろしいですか？</string>
+    <string name="dlg_full_toast_ok">削除しました。</string>
+    <string name="dlg_btn_ok">はい。</string>
+    <string name="dlg_btn_ng">いいえ。</string>
+<!--    エラー-->
+<string name="msg_save_error">データ更新に失敗しました。もう一度、操作を行ってください。</string>
+<string name="msg_delete_error">データ削除に失敗しました。もう一度、操作を行ってください。</string>
 </resources>

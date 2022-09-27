@@ -15,65 +15,7 @@
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbarToDoEdit" />
-
-
-    <!--    <TextView-->
-    <!--        android:id="@+id/tvInputContent"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:layout_marginStart="8dp"-->
-    <!--        android:layout_marginTop="16dp"-->
-    <!--        android:text="hogehoge"-->
-    <!--        app:layout_constraintStart_toStartOf="parent"-->
-    <!--        app:layout_constraintTop_toBottomOf="@+id/textView" />-->
-
-    <!--    <EditText-->
-    <!--        android:id="@+id/etInputNote"-->
-    <!--        android:layout_width="0dp"-->
-    <!--        android:layout_height="0dp"-->
-    <!--        android:layout_marginStart="8dp"-->
-    <!--        android:layout_marginTop="8dp"-->
-    <!--        android:layout_marginEnd="8dp"-->
-    <!--        android:ems="10"-->
-    <!--        android:gravity="start|top"-->
-    <!--        android:inputType="textMultiLine"-->
-    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent"-->
-    <!--        app:layout_constraintStart_toStartOf="parent"-->
-    <!--        app:layout_constraintTop_toBottomOf="@+id/tvInputContent" />-->
-
-    <!--    <Switch-->
-    <!--        android:id="@+id/switchButton"-->
-    <!--        android:layout_width="137dp"-->
-    <!--        android:layout_height="23dp"-->
-    <!--        android:layout_marginTop="8dp"-->
-    <!--        android:layout_marginEnd="8dp"-->
-    <!--        android:checked="false"-->
-    <!--        android:text="hogehoge"-->
-    <!--        app:layout_constraintBottom_toBottomOf="@+id/textView"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent"-->
-    <!--        app:layout_constraintTop_toBottomOf="@+id/etInputTask" />-->
-
-    <!--    <TextView-->
-    <!--        android:id="@+id/textView"-->
-    <!--        android:layout_width="0dp"-->
-    <!--        android:layout_height="18dp"-->
-    <!--        android:layout_marginStart="8dp"-->
-    <!--        android:layout_marginTop="8dp"-->
-    <!--        android:text="日時："-->
-    <!--        app:layout_constraintStart_toStartOf="parent"-->
-    <!--        app:layout_constraintTop_toBottomOf="@+id/etInputTask" />-->
-
-    <!--    <TextView-->
-    <!--        android:id="@+id/tvDate"-->
-    <!--        android:layout_width="0dp"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:layout_marginTop="8dp"-->
-    <!--        android:onClick="tvDateClick"-->
-    <!--        android:text="hogehoge"-->
-    <!--        app:layout_constraintStart_toEndOf="@+id/textView"-->
-    <!--        app:layout_constraintTop_toBottomOf="@+id/etInputTask" />-->
+        app:layout_constraintTop_toBottomOf="@+id/toolbarEdit" />
 
     <TextView
         android:id="@+id/tvInputTitle"
@@ -133,6 +75,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="16dp"
         android:ems="10"
+        android:gravity="start|top"
         android:inputType="textPersonName"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -140,7 +83,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tvEditNote" />
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbarToDoEdit"
+        android:id="@+id/toolbarEdit"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimary"

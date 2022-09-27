@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel;
 
 import com.google.common.util.concurrent.ListenableFuture;
 
+import java.util.Date;
 import java.util.concurrent.ExecutionException;
 
 import local.hal.st42.android.originalapp90727.dataaccess.AppDatabase;
@@ -23,7 +24,7 @@ public class EditViewModel extends AndroidViewModel {
 
     public Books getBooks(int id){
         BooksDAO booksDAO = _db.createBooksDAO();
-        ListenableFuture<Books> future = BooksDAO.findByPK(id);
+        ListenableFuture<Books> future = booksDAO.findByPK(id);
         Books books = new Books();
         try {
             books = future.get();
@@ -49,9 +50,11 @@ public class EditViewModel extends AndroidViewModel {
         return result;
     }
 
-    public int update(Books tasks){
+    public int update(Books books){
         BooksDAO booksDAO = _db.createBooksDAO();
-        ListenableFuture<Integer> future = booksDAO.update(tasks);
+        books.updateDate = new Date();
+        books.registrationDate = getBooks(books.id).registrationDate;
+        ListenableFuture<Integer> future = booksDAO.update(books);
         int result = 0;
         try {
             result = future.get();
