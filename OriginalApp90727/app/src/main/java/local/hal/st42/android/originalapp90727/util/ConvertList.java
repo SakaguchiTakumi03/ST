@@ -7,15 +7,14 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 public class ConvertList {
-    public String DateToString(Date value){
-        String pattern = "yyyy年[]M月[]d日";
-        SimpleDateFormat df = new SimpleDateFormat(pattern);
+    public String DateToString(Date value, String format){
+        SimpleDateFormat df = new SimpleDateFormat(format);
         String stringDate = df.format(value);
         return stringDate;
     }
 
     public String LocalDateToString(LocalDate value){
-        return value.format(DateTimeFormatter.ofPattern("yyyy年[]M月[]d日"));
+        return value.format(DateTimeFormatter.ofPattern("yyyy年MM月dd日"));
     }
 
     public Date StringToDate(String value){

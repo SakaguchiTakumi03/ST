@@ -1,25 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-<!--    <item-->
-<!--        android:id="@+id/menuTransition"-->
-<!--        android:icon="@drawable/ic_baseline_playlist_add_24"-->
-<!--        android:title="@string/menu_add"-->
-<!--        app:showAsAction="ifRoom"/>-->
     <item
-        android:id="@+id/menuListOptionTitle"
-        android:title="hogehoge"
-        app:showAsAction="always">
+        android:id="@+id/selectMenuInfo"
+        android:enabled="false"
+        android:title="タイトル昇順"
+        android:visible="true"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/menuTitleList"
+        android:title="@string/menu_title"
+        app:showAsAction="never">
         <menu>
             <item
-                android:id="@+id/menuAllList"
-                android:title="hogehoge"/>
+                android:id="@+id/menuTitleAsc"
+                android:title="@string/menu_asc"/>
             <item
-                android:id="@+id/menuFinished"
-                android:title="hogehoge"/>
-            <item
-                android:id="@+id/menuUnFinished"
-                android:title="hogehoge"/>
+                android:id="@+id/menuTitleDesc"
+                android:title="@string/menu_desc"/>
         </menu>
     </item>
+    <item
+        android:id="@+id/menuArtistList"
+        android:title="@string/menu_artist"
+        app:showAsAction="never">
+        <menu>
+            <item
+                android:id="@+id/menuArtistAsc"
+                android:title="@string/menu_asc"/>
+            <item
+                android:id="@+id/menuArtistDesc"
+                android:title="@string/menu_desc"/>
+        </menu>
+    </item>
+    <item
+        android:id="@+id/menuBookmarkList"
+        android:title="@string/menu_bookmark"
+        app:showAsAction="never"/>
 </menu>

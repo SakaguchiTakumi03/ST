@@ -13,14 +13,20 @@ import java.util.List;
 
 @Dao
 public interface BooksDAO {
-//    @Query("SELECT * FROM books ORDER BY  ASC")
-//    LiveData<List<Books>> findAll();
-//
-//    @Query("SELECT * FROM books WHERE done = 1 ORDER BY deadline DESC")
-//    LiveData<List<Books>> findFinished();
-//
-//    @Query("SELECT * FROM books WHERE done = 0 ORDER BY deadline DESC")
-//    LiveData<List<Books>> findUnFinished();
+    @Query("SELECT * FROM books ORDER BY title ASC")
+    LiveData<List<Books>> findTitleAsc();
+
+    @Query("SELECT * FROM books ORDER BY title DESC")
+    LiveData<List<Books>> findTitleDesc();
+
+    @Query("SELECT * FROM books ORDER BY artist ASC")
+    LiveData<List<Books>> findArtistAsc();
+
+    @Query("SELECT * FROM books ORDER BY artist DESC")
+    LiveData<List<Books>> findArtistDesc();
+
+    @Query("SELECT * FROM books WHERE bookmark = 1")
+    LiveData<List<Books>> findBookmark();
 
     @Query("SELECT * FROM books WHERE id = :id")
     static ListenableFuture<Books> findByPK(long id) {

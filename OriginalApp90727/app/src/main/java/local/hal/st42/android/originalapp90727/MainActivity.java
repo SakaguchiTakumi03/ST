@@ -1,21 +1,28 @@
 package local.hal.st42.android.originalapp90727;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.material.appbar.CollapsingToolbarLayout;
@@ -41,13 +48,13 @@ public class MainActivity extends AppCompatActivity {
 
     private RecyclerView _rvOriginApp;
 
-//    private OriginalAppListAdapter _adapter;
+    private OriginalAppListAdapter _adapter;
 
     private MainViewModel _mainViewModel;
 
-//    private TasksListObserver _tasksListObserver;
+    private BooksListObserver _booksListObserver;
 
-    private LiveData<List<Books>> _tasksListLiveData;
+    private LiveData<List<Books>> _booksListLiveData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         CollapsingToolbarLayout toolbarLayout = findViewById(R.id.toolbarLayout);
-        titleName = "hogehoge";
+        titleName = "蔵書管理アプリ";
         toolbarLayout.setTitle(titleName);
         toolbarLayout.setExpandedTitleColor(Color.WHITE);
         toolbarLayout.setCollapsedTitleTextColor(Color.LTGRAY);
@@ -69,16 +76,16 @@ public class MainActivity extends AppCompatActivity {
         DividerItemDecoration decoration = new DividerItemDecoration(MainActivity.this, layout.getOrientation());
         _rvOriginApp.addItemDecoration(decoration);
 
-        List<Books> tasksList = new ArrayList<>();
-//        _adapter = new OriginalAppListAdapter(tasksList);
-//        _rvOriginApp.setAdapter(_adapter);
+        List<Books> booksList = new ArrayList<>();
+        _adapter = new OriginalAppListAdapter(booksList);
+        _rvOriginApp.setAdapter(_adapter);
 
         ViewModelProvider provider = new ViewModelProvider(MainActivity.this);
         _mainViewModel = provider.get(MainViewModel.class);
-//        _tasksListObserver = new TasksListObserver();
-        _tasksListLiveData = new MutableLiveData<>();
+        _booksListObserver = new BooksListObserver();
+        _booksListLiveData = new MutableLiveData<>();
 
-//        createRecyclerView();
+        createRecyclerView();
 
         FloatingActionButton fab = findViewById(R.id.fabAdd);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -91,46 +98,146 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-//    private class OriginalAppListAdapter extends RecyclerView.Adapter<OriginalAppViewHolder> {
-//        private List<Tasks> _listData;
-//
-//        public OriginalAppListAdapter(List<Tasks> listData) {
-//            _listData = listData;
-//        }
-//
-//        public void changeTasksList(List<Tasks> listData) {
-//            _listData = listData;
-//            notifyDataSetChanged();
-//        }
-//
-//        @Override
-//        public OriginalAppViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-//            LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
-//            View row = inflater.inflate(R.layout.row, parent, false);
-//            OriginalAppViewHolder holder = new OriginalAppViewHolder(row);
-//            return holder;
-//        }
-//
-//        @Override
-//        public void onBindViewHolder(OriginalAppViewHolder holder, int position) {
-//            boolean checked = false;
-//            Tasks item = _listData.get(position);
-//        }
-//
-//        private class OriginalAppViewHolder extends RecyclerView.ViewHolder {
-//            public TextView _tvNameRow;
-//            public TextView _tvFixedDateRow;
-//            public CheckBox _cbTaskCheckRow;
-//
-//            public OriginalAppViewHolder(View itemView) {
-//                super(itemView);
-//                _tvNameRow = itemView.findViewById(R.id.tvNameRow);
-//                _tvFixedDateRow = itemView.findViewById(R.id.tvFixedDateRow);
-//                _cbTaskCheckRow = itemView.findViewById(R.id.cbTaskCheckRow);
-//            }
-//        }
-//    }
+    private class OriginalAppViewHolder extends RecyclerView.ViewHolder{
+        public TextView _tvTitleRow;
+        public TextView _tvArtistRow;
 
-//    private class TasksListObserver {
-//    }
+        public OriginalAppViewHolder(View itemView){
+            super(itemView);
+            _tvTitleRow = itemView.findViewById(R.id.tvTitleRow);
+            _tvArtistRow = itemView.findViewById(R.id.tvArtistRow);
+        }
+    }
+
+    private class OriginalAppListAdapter extends RecyclerView.Adapter<OriginalAppViewHolder> {
+        private List<Books> _listData;
+
+        public OriginalAppListAdapter(List<Books> listData) {
+            _listData = listData;
+        }
+
+        public void changeBooksList(List<Books> listData) {
+            _listData = listData;
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public OriginalAppViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
+            View row = inflater.inflate(R.layout.row, parent, false);
+            OriginalAppViewHolder holder = new OriginalAppViewHolder(row);
+            return holder;
+        }
+
+        @Override
+        public void onBindViewHolder(OriginalAppViewHolder holder, int position) {
+            Books item = _listData.get(position);
+
+            holder.itemView.setOnClickListener(new ListItemClickListener(item.id));
+            holder._tvTitleRow.setText(item.title);
+            holder._tvArtistRow.setText(item.artist);
+        }
+
+        @Override
+        public int getItemCount(){
+            return _listData.size();
+        }
+    }
+
+    private class BooksListObserver implements Observer<List<Books>> {
+        @Override
+        public void onChanged(List<Books> booksList) {
+            _adapter.changeBooksList(booksList);
+        }
+    }
+
+    private class ListItemClickListener implements View.OnClickListener{
+        private long _id;
+
+        public ListItemClickListener(long id){
+            _id = id;
+        }
+
+        @Override
+        public void onClick(View view){
+            Intent intent = new Intent(MainActivity.this,DetailActivity.class);
+//            intent.putExtra("mode",MODE_DETAIL);
+            intent.putExtra("idNo",_id);
+
+            startActivity(intent);
+        }
+    }
+
+    private void createRecyclerView(){
+        _booksListLiveData.removeObserver(_booksListObserver);
+        _booksListLiveData = _mainViewModel.getBooksList(_menuCategory);
+        _booksListLiveData.observe(MainActivity.this,_booksListObserver);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.option_menu,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME,MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+        boolean returnVal = true;
+        switch (item.getItemId()){
+            case R.id.menuTitleAsc:
+                _menuCategory = TITLE_ASC;
+                editor.putInt("selectedMenu",TITLE_ASC);
+                break;
+            case R.id.menuTitleDesc:
+                _menuCategory = TITLE_DESC;
+                editor.putInt("selectedMenu",TITLE_DESC);
+                break;
+            case R.id.menuArtistAsc:
+                _menuCategory = ARTIST_ASC;
+                editor.putInt("selectedMenu",ARTIST_ASC);
+                break;
+            case R.id.menuArtistDesc:
+                _menuCategory = ARTIST_DESC;
+                editor.putInt("selectedMenu",ARTIST_DESC);
+                break;
+            case R.id.menuBookmarkList:
+                _menuCategory = BOOKMARK;
+                editor.putInt("selectedMenu",BOOKMARK);
+                break;
+            default:
+                returnVal = super.onOptionsItemSelected(item);
+                break;
+        }
+        editor.apply();
+        if(returnVal){
+            createRecyclerView();
+            invalidateOptionsMenu();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    public boolean onPrepareOptionsMenu(Menu menu){
+        MenuItem menuOptionTitle = menu.findItem(R.id.selectMenuInfo);
+        switch (_menuCategory){
+            case TITLE_ASC:
+                menuOptionTitle.setTitle("タイトル昇順");
+                break;
+            case TITLE_DESC:
+                menuOptionTitle.setTitle("タイトル降順");
+                break;
+            case ARTIST_ASC:
+                menuOptionTitle.setTitle("作者昇順");
+                break;
+            case ARTIST_DESC:
+                menuOptionTitle.setTitle("作者降順");
+                break;
+            case BOOKMARK:
+                menuOptionTitle.setTitle("ブックマーク");
+                break;
+        }
+        return super.onPrepareOptionsMenu(menu);
+    }
 }

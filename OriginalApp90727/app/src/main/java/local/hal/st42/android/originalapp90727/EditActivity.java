@@ -95,7 +95,7 @@ public class EditActivity extends AppCompatActivity {
             EditText etInputNote = findViewById(R.id.etInputNote);
             etInputNote.setText(books.note);
 
-            tvClickDate.setText(cList.DateToString(books.purchaseDate));
+            tvClickDate.setText(cList.DateToString(books.purchaseDate,"yyyy年MM月dd日"));
 
             sBookmark.setEnabled(true);
             Switch bookmark = findViewById(R.id.switchBookmark);
@@ -152,6 +152,7 @@ public class EditActivity extends AppCompatActivity {
                     long result = 0;
                     if(_mode == MODE_INSERT){
                         books.registrationDate = cList.StringToDate(strNowDate);
+                        Log.d("insertRegistrationDate",cList.DateToString(books.registrationDate,""));
                         books.updateDate = null;
                         result = _editViewModel.insert(books);
                         Log.d("future_tag","_insert");

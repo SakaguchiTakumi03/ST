@@ -2,6 +2,7 @@ package local.hal.st42.android.originalapp90727.dataaccess;
 
 import androidx.room.TypeConverter;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 public class Converters{
