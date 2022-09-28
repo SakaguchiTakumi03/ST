@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -39,8 +40,11 @@ import static local.hal.st42.android.originalapp90727.Consts.*;
 public class MainActivity extends AppCompatActivity {
 
     private int _menuCategory;
+    private int _menuName;
 
     private static final String PREFS_NAME = "PSPrefsFile";
+
+    private static final String MENU_NAME = "MNPrefsFile";
 
     private static final int DEFAULT_SELECT = 1;
 
@@ -56,12 +60,16 @@ public class MainActivity extends AppCompatActivity {
 
     private LiveData<List<Books>> _booksListLiveData;
 
+    private MenuInflater inflater;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         _menuCategory = getSharedPreferences(PREFS_NAME,MODE_PRIVATE).getInt("selectedMenu",DEFAULT_SELECT);
+        _menuName = getSharedPreferences(MENU_NAME,MODE_PRIVATE).getInt("selectedMenuName",DEFAULT_SELECT);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         CollapsingToolbarLayout toolbarLayout = findViewById(R.id.toolbarLayout);
@@ -135,7 +143,13 @@ public class MainActivity extends AppCompatActivity {
 
             holder.itemView.setOnClickListener(new ListItemClickListener(item.id));
             holder._tvTitleRow.setText("タイトル："+item.title);
-            holder._tvArtistRow.setText("作者："+item.artist);
+            String artist = "";
+            if(item.artist.equals("")){
+                artist = "作者不定";
+            }else{
+                artist = item.artist;
+            }
+            holder._tvArtistRow.setText("作者："+artist);
         }
 
         @Override
@@ -163,7 +177,6 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this,DetailActivity.class);
             intent.putExtra("mode",MODE_DETAIL);
             intent.putExtra("idNo",_id);
-
             startActivity(intent);
         }
     }
@@ -176,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
-        MenuInflater inflater = getMenuInflater();
+        inflater = getMenuInflater();
         inflater.inflate(R.menu.option_menu,menu);
         return true;
     }
@@ -184,8 +197,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         SharedPreferences settings = getSharedPreferences(PREFS_NAME,MODE_PRIVATE);
+        SharedPreferences settingsMenu = getSharedPreferences(MENU_NAME,MODE_PRIVATE);
         SharedPreferences.Editor editor = settings.edit();
+        SharedPreferences.Editor editorMenu = settingsMenu.edit();
         boolean returnVal = true;
+
         switch (item.getItemId()){
             case R.id.menuTitleAsc:
                 _menuCategory = TITLE_ASC;
@@ -204,14 +220,23 @@ public class MainActivity extends AppCompatActivity {
                 editor.putInt("selectedMenu",ARTIST_DESC);
                 break;
             case R.id.menuBookmarkList:
-                _menuCategory = BOOKMARK;
-                editor.putInt("selectedMenu",BOOKMARK);
+                if(_menuName == 0){
+                    _menuCategory = TITLE_ASC;
+                    _menuName = 1;
+                    editor.putInt("selectedMenu",TITLE_ASC);
+                }else{
+                    _menuCategory = BOOKMARK;
+                    _menuName = 0;
+                    editor.putInt("selectedMenu",BOOKMARK);
+                }
+                editorMenu.putInt("selectedMenuName",_menuName);
                 break;
             default:
                 returnVal = super.onOptionsItemSelected(item);
                 break;
         }
         editor.apply();
+        editorMenu.apply();
         if(returnVal){
             createRecyclerView();
             invalidateOptionsMenu();
@@ -238,6 +263,8 @@ public class MainActivity extends AppCompatActivity {
                 menuOptionTitle.setTitle("ブックマーク");
                 break;
         }
+        Log.d("selectedMenu",Integer.toString(_menuCategory)+"+_menuCategory");
+        Log.d("selectedMenu",Integer.toString(_menuName)+"+_menuName");
         return super.onPrepareOptionsMenu(menu);
     }
 }

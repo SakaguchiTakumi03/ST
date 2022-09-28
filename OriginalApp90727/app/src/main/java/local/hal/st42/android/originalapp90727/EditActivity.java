@@ -89,7 +89,13 @@ public class EditActivity extends AppCompatActivity {
             etInputTitle.setText(books.title);
 
             EditText etInputArtist = findViewById(R.id.etInputArtist);
-            etInputArtist.setText(books.artist);
+            String etArtistValue = "";
+            if(books.artist.equals("作者不定")){
+                etArtistValue = "";
+            }else{
+                etArtistValue = books.artist;
+            }
+            etInputArtist.setText(etArtistValue);
 
             EditText etInputNote = findViewById(R.id.etInputNote);
             etInputNote.setText(books.note);
@@ -124,6 +130,7 @@ public class EditActivity extends AppCompatActivity {
                 finish();
                 return true;
             case R.id.menuSave:
+//                ConvertList cList = new ConvertList();
                 EditText etInputTitle = findViewById(R.id.etInputTitle);
                 String inputTitle = etInputTitle.getText().toString();
                 EditText etInputArtist = findViewById(R.id.etInputArtist);
@@ -133,21 +140,32 @@ public class EditActivity extends AppCompatActivity {
                 Switch bSwitch = findViewById(R.id.switchBookmark);
 
                 if(inputTitle.equals("")){
-                    Toast.makeText(EditActivity.this,"", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(EditActivity.this,R.string.toast_err_message, Toast.LENGTH_SHORT).show();
                     break;
                 }else{
                     ConvertList cList = new ConvertList();
                     Books books = new Books();
                     books.title = inputTitle;
-                    books.artist = inputArtist;
                     books.note = inputNote;
                     if(bSwitch.isChecked() == true){
                         books.bookmark = 1;
                     }else{
                         books.bookmark = 0;
                     }
+                    books.artist = inputArtist;
                     long result = 0;
-                    books.purchaseDate = cList.longToDate(longTimeInMillis);
+                    TextView tvClickDate = findViewById(R.id.tvClickDate);
+                    String strValue = tvClickDate.getText().toString();
+                    Log.d("strDateValue",strValue);
+                    String tvCharRemoveValue = cList.RemoveStrDateChar(strValue);
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+                    Date date = new Date();
+                    try {
+                        date = sdf.parse(tvCharRemoveValue);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    books.purchaseDate = cList.longToDate(date.getTime());
                     books.registrationDate = new Date();
                     books.updateDate = null;
 
@@ -181,6 +199,7 @@ public class EditActivity extends AppCompatActivity {
     public void tvClickDate(View view) {
         TextView tvDate = findViewById(R.id.tvClickDate);
         String strDate = tvDate.getText().toString();
+        Log.d("tvClickDateOnClick",strDate);
         strDate = strDate.replace("年","");
         strDate = strDate.replace("月","");
         strDate = strDate.replace("日","");
