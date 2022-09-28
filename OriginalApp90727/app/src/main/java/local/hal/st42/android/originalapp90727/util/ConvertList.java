@@ -45,17 +45,4 @@ public class ConvertList {
         Log.d("StringToDate",DateToString(date,"yyyy-MM-dd HH:mm:ss"));
         return date;
     }
-
-    public long StringToLong(String value){
-        long longValue = new Long(value);
-        return longValue;
-    }
-
-    public String RemoveStrDateChar(String value){
-        value = value.replace("年","");
-        value = value.replace("月","");
-        value = value.replace("日","");
-        return value;
-    }
-
 }

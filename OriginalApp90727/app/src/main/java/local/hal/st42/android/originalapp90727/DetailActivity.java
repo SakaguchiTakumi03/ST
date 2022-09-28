@@ -103,7 +103,7 @@ public class DetailActivity extends AppCompatActivity {
                 tvBookmark.setText("ブックマークしてないよ");
             }
             TextView tvPurchase = findViewById(R.id.tvDetailPurchaseDateValue);
-            tvPurchase.setText(cList.DateToString(books.purchaseDate,"yyyy年MM月dd日"));
+            tvPurchase.setText(cList.DateToString(books.purchaseDate,"yyyy年MM月dd日 hh:mm:ss"));
             TextView tvRegistration = findViewById(R.id.tvDetailRegistrationDateValue);
             tvRegistration.setText(cList.DateToString(books.registrationDate,"yyyy年MM月dd日 hh:mm:ss"));
             TextView tvUpdate = findViewById(R.id.tvDetailUpdateDateValue);
