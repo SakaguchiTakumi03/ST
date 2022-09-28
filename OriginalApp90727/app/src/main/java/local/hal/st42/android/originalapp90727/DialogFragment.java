@@ -59,6 +59,7 @@ public class DialogFragment extends androidx.fragment.app.DialogFragment {
                 }else {
                     Toast.makeText(parent,msg,Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(parent,MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                     startActivity(intent);
                 }

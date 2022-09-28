@@ -20,6 +20,8 @@
     <string name="dlg_full_toast_ok">削除しました。</string>
     <string name="dlg_btn_ok">はい。</string>
     <string name="dlg_btn_ng">いいえ。</string>
+<!--    トースト-->
+    <string name="toast_err_message">必須項目の値を入力してください。</string>
 <!--    エラー-->
 <string name="msg_save_error">データ更新に失敗しました。もう一度、操作を行ってください。</string>
 <string name="msg_delete_error">データ削除に失敗しました。もう一度、操作を行ってください。</string>
