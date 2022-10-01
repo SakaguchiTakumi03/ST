@@ -42,17 +42,17 @@ public class MainViewModel extends AndroidViewModel {
         return booksList;
     }
 
-//    public int checkedDone(int id , int done){
-//        BooksDAO booksDAO = _db.createBooksDAO();
-//        ListenableFuture<Integer> future = booksDAO.changeTaskChecked(id, done);
-//        int result = 0;
-//        try {
-//            result = future.get();
-//        } catch (ExecutionException e) {
-//            Log.e("EditViewModel","データ処理失敗");
-//        } catch (InterruptedException e) {
-//            Log.e("EditViewModel","データ処理失敗");
-//        }
-//        return result;
-//    }
+    public int checkedDone(int id , int done){
+        BooksDAO booksDAO = _db.createBooksDAO();
+        ListenableFuture<Integer> future = booksDAO.changeTaskChecked(id, done);
+        int result = 0;
+        try {
+            result = future.get();
+        } catch (ExecutionException e) {
+            Log.e("EditViewModel","データ処理失敗");
+        } catch (InterruptedException e) {
+            Log.e("EditViewModel","データ処理失敗");
+        }
+        return result;
+    }
 }
