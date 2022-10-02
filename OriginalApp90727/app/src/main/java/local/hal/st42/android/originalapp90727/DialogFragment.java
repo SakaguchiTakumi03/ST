@@ -17,8 +17,6 @@ import static local.hal.st42.android.originalapp90727.Consts.*;
 
 public class DialogFragment extends androidx.fragment.app.DialogFragment {
 
-//    private int _mode = MODE_INSERT;
-
     private long _idNo = 0;
 
     private EditViewModel _editViewModel;

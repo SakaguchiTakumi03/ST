@@ -15,8 +15,7 @@ public class Books {
 
     @NonNull
     public String title;
-
-//    @NonNull
+    
     public String artist;
 
     public String note;

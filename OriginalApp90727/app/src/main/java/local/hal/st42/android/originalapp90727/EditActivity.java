@@ -195,7 +195,7 @@ public class EditActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    //tvDateのonClickメソッド
+    //tvClickDateのonClickメソッド
     public void tvClickDate(View view) {
         TextView tvDate = findViewById(R.id.tvClickDate);
         String strDate = tvDate.getText().toString();

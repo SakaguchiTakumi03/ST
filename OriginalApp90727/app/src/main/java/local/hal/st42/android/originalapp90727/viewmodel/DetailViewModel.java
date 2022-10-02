@@ -23,20 +23,6 @@ public class DetailViewModel extends AndroidViewModel {
         _db = AppDatabase.getDatabase(application);
     }
 
-//    public Books getBooks(int id){
-//        BooksDAO booksDAO = _db.createBooksDAO();
-//        ListenableFuture<Books> future = booksDAO.findByPK(id);
-//        Books books = new Books();
-//        try {
-//            books = future.get();
-//        } catch (ExecutionException ex) {
-//            Log.e("EditViewModel","データ取得処理失敗");
-//        } catch (InterruptedException ex) {
-//            Log.e("EditViewModel","データ取得処理失敗");
-//        }
-//        return books;
-//    }
-
     public LiveData<Books> getBooks(int id){
         BooksDAO booksDAO = _db.createBooksDAO();
         LiveData<Books> book = booksDAO.findByPKLiveData(id);
