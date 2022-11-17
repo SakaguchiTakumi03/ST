@@ -2,17 +2,16 @@ package local.hal.ma42.android.favoriteshops90057;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,6 +29,8 @@ public class ShopEditActivity extends AppCompatActivity {
      * データベースヘルパーオブジェクト。
      */
     private DatabaseHelper _helper;
+
+    private string _browserUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,9 +108,9 @@ public class ShopEditActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         if(_mode == MainActivity.MODE_INSERT){
-            inflater.inflate(R.menu.option_edit_menu, menu);
-        }else{
             inflater.inflate(R.menu.option_create_menu, menu);
+        }else{
+            inflater.inflate(R.menu.option_edit_menu, menu);
         }
         return true;
     }
@@ -122,15 +123,15 @@ public class ShopEditActivity extends AppCompatActivity {
             return true;
             case R.id.menuSave:
                 EditText etInputName = findViewById(R.id.etInputName);
+                EditText etInputUrl = findViewById(R.id.etInputUrl);
                 String inputName = etInputName.getText().toString();
+                String inputUrl = etInputUrl.getText().toString();
                 if(inputName.equals("")){
                     Toast.makeText(ShopEditActivity.this,"店名を入力しましょう！！！",Toast.LENGTH_SHORT).show();
                 }else{
                     EditText etInputTel = findViewById(R.id.etInputTel);
-                    EditText etInputUrl = findViewById(R.id.etInputUrl);
                     EditText etInputNote = findViewById(R.id.etInputNote);
                     String inputTel = etInputTel.getText().toString();
-                    String inputUrl = etInputUrl.getText().toString();
                     String inputNote = etInputNote.getText().toString();
                     SQLiteDatabase db = _helper.getWritableDatabase();
                     if(_mode == MainActivity.MODE_INSERT){
@@ -140,6 +141,17 @@ public class ShopEditActivity extends AppCompatActivity {
                     }
                     finish();
                 }
+            return true;
+            case R.id.menuOpenBrowser:
+                etInputUrl = findViewById(R.id.etInputUrl);
+                inputUrl = etInputUrl.getText().toString();
+                if(inputUrl.equals("")){
+                    Toast.makeText(ShopEditActivity.this,"開くにはURLを入力してください！！！",Toast.LENGTH_SHORT).show();
+                }else{
+                    Intent intent = new Intent(Intent.ACTION_VIEW,Uri.parse(inputUrl));
+                    startActivity(intent);
+                }
+
             return true;
             case R.id.menuDelete:
                 DialogFragment dialog = new DialogFragment(_helper,_idNo);
@@ -170,4 +182,6 @@ public class ShopEditActivity extends AppCompatActivity {
         finish();
     }
 
+    private class string {
+    }
 }
