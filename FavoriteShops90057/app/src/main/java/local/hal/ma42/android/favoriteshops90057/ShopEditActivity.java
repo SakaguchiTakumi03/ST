@@ -1,10 +1,16 @@
 package local.hal.ma42.android.favoriteshops90057;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -35,15 +41,13 @@ public class ShopEditActivity extends AppCompatActivity {
         Intent intent = getIntent();
         _mode = intent.getIntExtra("mode", MainActivity.MODE_INSERT);
 
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
         if(_mode == MainActivity.MODE_INSERT) {
             TextView tvNameEdit = findViewById(R.id.tvNameEdit);
             tvNameEdit.setText(R.string.tv_title_insert);
 
-            Button btnSave = findViewById(R.id.btnSave);
-            btnSave.setText(R.string.btn_insert);
-
-            Button btnDelete = findViewById(R.id.btnDelete);
-            btnDelete.setVisibility(View.INVISIBLE);
         }
         else {
             _idNo = intent.getLongExtra("idNo", 0);
@@ -99,6 +103,39 @@ public class ShopEditActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        if(_mode == MainActivity.MODE_INSERT){
+            inflater.inflate(R.menu.option_edit_menu, menu);
+        }else{
+            inflater.inflate(R.menu.option_create_menu, menu);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch (item.getItemId()){
+            case android.R.id.home:
+                finish();
+            return true;
+            case R.id.menuSave:
+                EditText etInputName = findViewById(R.id.etInputName);
+                String inputName = etInputName.getText().toString();
+                if(inputName.equals("")){
+                    Toast.makeText(ShopEditActivity.this,"店名を入力しましょう！！！",Toast.LENGTH_SHORT).show();
+                }
+            return true;
+            case R.id.menuDelete:
+                DialogFragment dialog = new DialogFragment(_helper,_idNo);
+                FragmentManager manager = getSupportFragmentManager();
+                dialog.show(manager,"DialogFragment");
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     /**
      * 戻るボタンが押されたときのイベント処理用メソッド。
      *
@@ -118,4 +155,5 @@ public class ShopEditActivity extends AppCompatActivity {
         DataAccess.delete(db, _idNo);
         finish();
     }
+
 }

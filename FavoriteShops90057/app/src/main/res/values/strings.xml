@@ -13,6 +13,9 @@
     <string name="btn_save">更新</string>
     <string name="btn_insert">登録</string>
     <string name="menu_add">要素の追加</string>
+    <string name="menu_delete"></string>
+    <string name="menu_sync"></string>
+    <string name="menu_save"></string>
     <string name="btn_back">戻る</string>
     <string name="btn_delete">削除</string>
     <string name="msg_input_name">お店の名前を入力してください。</string>
