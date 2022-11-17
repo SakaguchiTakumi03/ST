@@ -125,6 +125,20 @@ public class ShopEditActivity extends AppCompatActivity {
                 String inputName = etInputName.getText().toString();
                 if(inputName.equals("")){
                     Toast.makeText(ShopEditActivity.this,"店名を入力しましょう！！！",Toast.LENGTH_SHORT).show();
+                }else{
+                    EditText etInputTel = findViewById(R.id.etInputTel);
+                    EditText etInputUrl = findViewById(R.id.etInputUrl);
+                    EditText etInputNote = findViewById(R.id.etInputNote);
+                    String inputTel = etInputTel.getText().toString();
+                    String inputUrl = etInputUrl.getText().toString();
+                    String inputNote = etInputNote.getText().toString();
+                    SQLiteDatabase db = _helper.getWritableDatabase();
+                    if(_mode == MainActivity.MODE_INSERT){
+                        DataAccess.insert(db,inputName,inputTel,inputUrl,inputNote);
+                    }else{
+                        DataAccess.update(db,_idNo,inputName,inputTel,inputUrl,inputNote);
+                    }
+                    finish();
                 }
             return true;
             case R.id.menuDelete:
